@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/mukundshankar-dev.github.io/static/css/main.fe8d3050.css",
-    "main.js": "/mukundshankar-dev.github.io/static/js/main.f4a0db8f.js",
-    "static/js/787.d1d4a2c2.chunk.js": "/mukundshankar-dev.github.io/static/js/787.d1d4a2c2.chunk.js",
-    "static/media/balloons.jpeg": "/mukundshankar-dev.github.io/static/media/balloons.53905bfca4cce71675ec.jpeg",
-    "static/media/resume.pdf": "/mukundshankar-dev.github.io/static/media/resume.f1dfe52fbe83718deea0.pdf",
-    "static/media/umd.png": "/mukundshankar-dev.github.io/static/media/umd.568c86facc1873381d46.png",
-    "static/media/arnold.png": "/mukundshankar-dev.github.io/static/media/arnold.125c627315c558a4e0cb.png",
-    "static/media/logo.svg": "/mukundshankar-dev.github.io/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/mukundshankar-dev.github.io/index.html",
-    "main.fe8d3050.css.map": "/mukundshankar-dev.github.io/static/css/main.fe8d3050.css.map",
-    "main.f4a0db8f.js.map": "/mukundshankar-dev.github.io/static/js/main.f4a0db8f.js.map",
-    "787.d1d4a2c2.chunk.js.map": "/mukundshankar-dev.github.io/static/js/787.d1d4a2c2.chunk.js.map"
+    "main.css": "/MukundShankar-dev.github.io/static/css/main.fe8d3050.css",
+    "main.js": "/MukundShankar-dev.github.io/static/js/main.2cb7897d.js",
+    "static/js/787.d1d4a2c2.chunk.js": "/MukundShankar-dev.github.io/static/js/787.d1d4a2c2.chunk.js",
+    "static/media/balloons.jpeg": "/MukundShankar-dev.github.io/static/media/balloons.53905bfca4cce71675ec.jpeg",
+    "static/media/resume.pdf": "/MukundShankar-dev.github.io/static/media/resume.f1dfe52fbe83718deea0.pdf",
+    "static/media/umd.png": "/MukundShankar-dev.github.io/static/media/umd.568c86facc1873381d46.png",
+    "static/media/arnold.png": "/MukundShankar-dev.github.io/static/media/arnold.125c627315c558a4e0cb.png",
+    "static/media/logo.svg": "/MukundShankar-dev.github.io/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/MukundShankar-dev.github.io/index.html",
+    "main.fe8d3050.css.map": "/MukundShankar-dev.github.io/static/css/main.fe8d3050.css.map",
+    "main.2cb7897d.js.map": "/MukundShankar-dev.github.io/static/js/main.2cb7897d.js.map",
+    "787.d1d4a2c2.chunk.js.map": "/MukundShankar-dev.github.io/static/js/787.d1d4a2c2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.fe8d3050.css",
-    "static/js/main.f4a0db8f.js"
+    "static/js/main.2cb7897d.js"
   ]
 }
