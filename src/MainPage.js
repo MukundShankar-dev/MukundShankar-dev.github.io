@@ -102,7 +102,7 @@ function App() {
                 <h1>Education - BS. Computer Science (Hons) + Mathematics</h1>
                 <h2>Robotics & Autonomous Systems minor</h2>
                 <div class="course-grid">
-                    <div class="course">MATH410 - Advanced Calculus</div>
+                    <div class="course">MATH410 - Advanced Calculus/Real Analysis</div>
                     {/* <div class="course">CMSC422 - Machine Learning</div> */}
                     {/* <div class="course">CMSC426 - Computer Vision</div> */}
                     {/* <div class="course">ENME480 - Introduction to Robotics</div> */}
