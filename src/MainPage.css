@@ -177,6 +177,13 @@ html {
     padding-right: 10px;
 }
 
+.personal-description a {
+    text-decoration: none;
+    color: white;
+    background-color: black;
+    font-family: 'Open Sans', sans-serif;
+}
+
 .email a {
     text-decoration: none;
     color: white;

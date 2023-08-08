@@ -25,6 +25,8 @@ function App() {
                             University of Maryland, where I am focusing on machine learning. Below, you can find some more
                             information on my experiences, the projects I have been involved in, and classes I have taken.
                             <br></br>Thanks for visiting :)
+                            <br></br><br></br>
+                            Find my contact details <a href="#download">here</a>
                         </p1>
                     </div>
                 </div>
@@ -34,6 +36,29 @@ function App() {
             <div class="experiences-section">
                 <h1>Experiences & Projects</h1>
                 <div class="experiences-container">
+
+                    <div class="experience">
+                        <div class="ribbon">
+                            <div class="dot-red"></div>
+                            <div class="dot-amber"></div>
+                            <div class="dot-green"></div>
+                        </div>
+                        <div class="exp-text">
+                            <h2>Undergraduate Researcher</h2>
+                            <p>Worked in Dr. Abhinav Shrivastava's lab, researching dynamic planning for robots using reinforcement learning. Ran simulations using
+                                OpenAI's gym and gymnasium libraries and MuJoco. Also worked on image processing using Intel RealSense depth cameras.<br></br>
+                            </p>
+
+                            <img src={umd} alt="University of Maryland" />
+
+                            <p>
+                                <br></br><br></br>
+                                Duration: July 2023 - Current
+                            </p>
+                            <p><strong>Skills: </strong>Python, gym, gymnasium, MuJoco, Intel RealSense, Reinforcement Learning, stable-baselines3</p>
+                        </div>
+                    </div>
+
                     <div class="experience">
                         <div class="ribbon">
                             <div class="dot-red"></div>
@@ -98,7 +123,7 @@ function App() {
                 </div>
             </div>
 
-            <div class="education-section">
+            <div class="education-section" id="education section">
                 <h1>Education - BS. Computer Science (Hons) + Mathematics</h1>
                 <h2>Robotics & Autonomous Systems minor</h2>
                 <div class="course-grid">
