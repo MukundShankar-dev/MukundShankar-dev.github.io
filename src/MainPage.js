@@ -2,7 +2,7 @@ import './MainPage.css';
 import resume from './files/resume.pdf';
 import balloon from './files/balloons.jpeg';
 import umd from './files/umd.png';
-import arnold from './files/arnold.png'
+import agora from './files/agora.png'
 import git from './files/git.png';
 
 function App() {
@@ -45,8 +45,8 @@ function App() {
                         </div>
                         <div class="exp-text">
                             <h2>Undergraduate Researcher</h2>
-                            <p>Worked in Dr. Abhinav Shrivastava's lab, researching dynamic planning for robots using reinforcement learning. Ran simulations using
-                                OpenAI's gym and gymnasium libraries and MuJoco. Also worked on image processing using Intel RealSense depth cameras.<br></br>
+                            <p>Worked in Dr. Abhinav Shrivastava's group, researching dynamic planning for robots using reinforcement learning. Worked on image processing using Intel RealSense depth cameras.
+                                Working on developing a model to well condition a latent space between text and human motion representations.<br></br>
                             </p>
 
                             <img src={umd} alt="University of Maryland" />
@@ -55,7 +55,7 @@ function App() {
                                 <br></br><br></br>
                                 Duration: July 2023 - Current
                             </p>
-                            <p><strong>Skills: </strong>Python, gym, gymnasium, MuJoco, Intel RealSense, Reinforcement Learning, stable-baselines3</p>
+                            <p><strong>Skills: </strong>python, torch(lightning), hydra, SLURM</p>
                         </div>
                     </div>
 
@@ -78,7 +78,7 @@ function App() {
                                 preparing class materials, proctoring weekly quizzes, and holding office hours to help students with any
                                 questions about class material and projects.
                                 <br></br><br></br>
-                                Duration: August 2022 - Current
+                                Duration: August 2022 - December 2023
                             </p>
                             <p><strong>Skills: </strong>Java, teaching, communication, organization</p>
                         </div>
@@ -90,15 +90,17 @@ function App() {
                             <div class="dot-green"></div>
                         </div>
                         <div class="exp-text">
-                            <h2>ArnoldAI</h2>
+                            <h2>agora.</h2>
                             <p>Developed an app which uses Natural Language Processing to generate curated daily meal plans for users
-                                based on input text.<br></br>Used Amazon SageMaker to train and deploy model on our API, and used MongoDB
-                                to store data to retrain model on.<br></br>iOS app development underway.
+                                based on input text. Used Amazon SageMaker to train and deploy model on our API, and used MongoDB
+                                to store data to retrain model on.
                             </p>
 
-                            <img src={arnold} alt="ArnoldAI" />
+                            <img src={agora} width="10%" height="50px" alt="agora." />
 
                             <a href="https://master.d1frbpmrrocpzu.amplifyapp.com" target="_blank">Link to website</a>
+                            <br></br>
+                            <a href="https://apps.apple.com/us/app/agora/id6462011570?ign-itscg=30200&ign-itsct=apps_box_badge" target="_blank">On the app store</a>
                             <p><strong>Skills: </strong>Large Language Models, React, Express, MongoDB, AWS (SageMaker)</p>
                         </div>
                     </div>
@@ -117,6 +119,8 @@ function App() {
                             <img src={balloon} alt="Project 1" />
 
                             <p1>This won first place in the Northrop Grumman Hack Week Contest in 2023</p1>
+                            <br></br>
+                            <a href="https://github.com/MukundShankar-dev/aerial-object-classification" target="_blank">Link to repo with more info</a>
                             <p><strong>Skills: </strong>PyTorch, matplotlib, seaborn, YOLOv5</p>
                         </div>
                     </div>
@@ -127,17 +131,19 @@ function App() {
                 <h1>Education - BS. Computer Science (Hons) + Mathematics</h1>
                 <h2>Robotics & Autonomous Systems minor</h2>
                 <div class="course-grid">
-                    <div class="course">MATH410 - Advanced Calculus/Real Analysis</div>
+                    <div class="course">CMSC472 - Intro to Deep Learning</div>
+                    <div class="course">STAT420 - Theory and Methods of Statistics</div>
+                    <div class="course">ENAE450 - Robotics Programming</div>
+                    <div class="course">ENME480 - Introduction to Robotics</div>
+                    <div class="course">CMSC420 - Data Structures</div>
+                    <div class="course">CMSC421 - Intro to AI</div>
+                    <div class="course">CMSC426 - Computer Vision</div>
+                    <div class="course">MATH410 - Advanced Calculus</div>
                     {/* <div class="course">CMSC422 - Machine Learning</div> */}
-                    {/* <div class="course">CMSC426 - Computer Vision</div> */}
-                    {/* <div class="course">ENME480 - Introduction to Robotics</div> */}
-                    {/* <div class="course">CMSC420 - Data Structures</div> */}
-                    {/* <div class="course">STAT410 - Introduction to Probability Theory</div> */}
                     <div class="course">CMSC351 - Algorithms</div>
                     <div class="course">CMSC330 - Organization of Programming Languages</div>
                     <div class="course">CMSC320 - Data Science</div>
                     <div class="course">MATH240 - Introduction to Linear Algebra</div>
-                    <div class="course">STAT400 - Applied Statistics & Probability I</div>
                     <div class="course">MATH246 - Differential Equations</div>
                     <div class="course">MATH241 - Multivariate Calculus</div>
                     <div class="course">CMSC216 - Introduction to Computer Systems</div>
