@@ -1,205 +1,197 @@
+/* VERSION 3.0 */
 body {
-    margin-left: 1rem;
-    /* background-color: rgb(12, 3, 79); */
-    background-color: rgb(9, 1, 69);
-    font: 1.3rem Inconsolata, monospace;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
 }
 
-html {
-    scroll-behavior: smooth;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.navbar {
+    background-color: #333;
+    overflow: hidden;
 }
 
-.ribbon {
+.navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.personal-info {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    height: 25px;
-    background: black;
-    background: -o-linear-gradient(top, #f6f6f6 0%, #dadada 100%);
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.dot-red {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background: #FF6057;
-    border-radius: 50%;
-    margin: 0 4px 0 0;
+.personal-info a {
+    color: inherit;
 }
 
-.dot-amber {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background: #FFBD2E;
-    border-radius: 50%;
-    margin: 0 4px 0 0;
+.personal-text {
+    flex: 1;
 }
 
-.dot-green {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background: #27C93F;
-    border-radius: 50%;
-    margin: 0 4px 0 0;
+.personal-image {
+    flex: 0 0 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.top {
-    padding-top: 25px;
-    padding-bottom: 25px;
-}
-
-.header {
-    background-color: rgb(40, 39, 46);
-    margin: auto;
-    border: 3px solid black;
-    border-radius: 10px 10px 10px 10px;
-    width: 40%;
-    padding-bottom: 10px;
-}
-
-.personal-description {
-    padding: 10px;
-    color: white;
-}
-
-.name {
-    width: auto;
-    text-align: center;
-    padding-bottom: 0px;
-}
-
-.name h1 {
-    /* color: white; */
-    color: blanchedalmond;
-    font-size: 3em;
-}
-
-.experiences-section {
-    width: 95%;
-    flex-direction: column;
-    text-align: center;
-    padding: 2em;
-    color: white;
-}
-
-.experiences-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 20px;
-    /* overflow: none; */
-}
-
-.experiences-container :hover {
-    transition: 0.5s;
-    transform: scale(1.1);
-}
-
-.experience {
+.personal-image img {
     width: 100%;
     height: 100%;
-    text-align: left;
-    background-color: rgb(40, 39, 46);
-    padding-top: 0px;
-    box-sizing: border-box;
-    margin: auto;
-    border: 3px solid black;
-    border-radius: 10px 10px 10px 10px;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: brightness(75%);
 }
 
-.experience :hover {
-    transform: scale(1.0);
-}
-
-.experience h2 {
-    color: blanchedalmond;
-}
-
-.experience p {
-    font-size: 1rem;
-    color: white;
-}
-
-.exp-text {
-    padding: 10px;
-}
-
-.exp-text a {
+.links a {
+    margin-right: 10px;
+    color: #0073e6;
     text-decoration: none;
-    font-size: 1rem;
-    color: lime;
 }
 
-.exp-text p1 {
-    color: aqua;
-    text-decoration: none;
-    font-size: 1.1rem;
+.links a:hover {
+    text-decoration: underline;
 }
 
-.education-section,
-.contact-section {
-    color: white;
-    text-align: center;
+.experiences,
+.coursework {
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.experiences h2,
+.coursework h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.experience-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: nowrap;
+}
+
+.experience-item a {
+    color: inherit;
+}
+
+.experience-item img {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.experience-item div {
+    flex-grow: 1;
 }
 
 .course-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
 }
 
-.course {
-    padding: 20px;
+.course-grid div {
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
     text-align: center;
-    color: blanchedalmond;
+    font-size: 1em;
 }
 
-.contact-section {
-    width: 75%;
-    margin: auto;
-    justify-content: center;
-    align-items: center;
-    padding: 2em;
-    margin-bottom: 25px;
-    text-align: left;
+.course-grid a {
+    color: inherit;
 }
 
-.email {
-    text-decoration: none;
-    color: white;
-    font-family: 'Open Sans', sans-serif;
-    padding-left: 10px;
-    padding-right: 10px;
+h3 {
+    margin-bottom: 5px;
 }
 
-.personal-description a {
-    text-decoration: none;
-    color: white;
-    background-color: black;
-    font-family: 'Open Sans', sans-serif;
+.date {
+    font-style: italic;
+    color: #555;
+    font-size: 0.9em;
+    display: block;
+    margin-bottom: 5px;
 }
 
-.email a {
-    text-decoration: none;
-    color: white;
-    background-color: black;
-    font-family: 'Open Sans', sans-serif;
+.highlight {
+    font-weight: bold;
+    color: #d9534f;
+    background-color: #f9f2f4;
+    padding: 2px 4px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 5px;
 }
 
-.head h1 {
-    color: white;
-    text-align: center;
+@media (max-width: 768px) {
+    .navbar a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+
+    .experience-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .experience-item img {
+        margin-bottom: 10px;
+    }
+
+    .personal-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .personal-image {
+        margin-top: 20px;
+    }
 }
 
-.exp-text img {
-    width: 100%;
-    height: 50%;
-    object-fit: cover;
-    border-radius: 10px;
+@media (max-width: 480px) {
+    .personal-info h1 {
+        font-size: 1.5em;
+    }
+
+    .personal-info p,
+    .experience-item p {
+        font-size: 1em;
+    }
+
+    .course-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
 }

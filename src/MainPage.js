@@ -1,180 +1,112 @@
+import React from 'react';
 import './MainPage.css';
+import umd from './files/umd.png';
+import agora from './files/agora.png';
+import git from './files/git.png';
+import mukund from './files/mukund.jpg';
 import resume from './files/resume.pdf';
 import balloon from './files/balloons.jpeg';
-import umd from './files/umd.png';
-import agora from './files/agora.png'
-import git from './files/git.png';
 
 function App() {
     return (
-        <div>
+        <div className="container">
+            <div className="personal-info">
+                <div className="personal-text">
+                    <h1>Mukund Shankar</h1>
+                    <p>I am a Senior Computer Science + Math major undergraduate at the University of Maryland, College Park.
+                        I do cool research with <a href="https://www.cs.umd.edu/~abhinav/" target="_blank" rel="noopener noreferrer">Dr. Abhinav Shrivastava</a> involving deep learning and machine learning models.
+                        Find more information in the projects section of this page.
+                    </p>
+                    <div className="links">
+                        <a href="mailto:smukund@gmail.com" target="_blank" rel="noopener noreferrer">Email</a>
+                        <a href={resume} target="_blank" rel="noopener noreferrer">Resume</a>
+                        <a href="https://www.linkedin.com/in/mukundsh" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                        <a href="https://github.com/mukundshankar-dev" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </div>
+                </div>
+                <div className="personal-image">
+                    <img src={mukund} alt="Mukund Shankar" />
+                </div>
+            </div>
 
-            {/* Name and 'window' with description, ADD NAVBAR HERE */}
-            <div class="top">
-                <div class="header">
-                    <div class="ribbon">
-                        <div class="dot-red"></div>
-                        <div class="dot-amber"></div>
-                        <div class="dot-green"></div>
+            <div className="experiences">
+                <h2>Experiences/Projects</h2>
+                <div className="experience-item">
+                    <img src={umd} alt="UMD Research" />
+                    <div>
+                        <h3>Undergraduate Researcher</h3>
+                        <span className="date">July 2023 - Present</span>
+                        Working in <a href="https://www.cs.umd.edu/~abhinav/" target="_blank" rel="noopener noreferrer">Dr. Abhinav Shrivastava's</a> group, developing a model to well condition a latent space between text and human motion representations,
+                        training a model to be used for action classification. We are looking to submit this work for publication in Fall of 2024.
+                        Worked on image processing using Intel RealSense depth cameras.
                     </div>
-                    <div class="name">
-                        <h1>Mukund Shankar</h1>
+                </div>
+                <div className="experience-item">
+                    <img src={agora} alt="Agora" />
+                    <div>
+                        <h3>agora.</h3>
+                        Developed an app which uses Natural Language Processing to generate curated daily meal plans based on text input from users.
+                        <br></br>
+                        <a href="https://www.cs.umd.edu/article/2023/10/umd-undergrads-revolutionize-meal-planning-innovative-app" target="_blank">Ft. in UMD Newsletter</a>
+                        <br></br>
+                        <a href="https://master.d1frbpmrrocpzu.amplifyapp.com/" target="_blank" rel="noopener noreferrer">Website</a>
+                        <br></br>
+                        <a href="https://apps.apple.com/us/app/agora/id6462011570?ign-itscg=30200&ign-itsct=apps_box_badge" target="_blank" rel="noopener noreferrer">On the app store</a>
                     </div>
-                    <div class="personal-description">
-                        <p1>Welcome to my portfolio. I am Mukund Shankar, a junior Computer Science + Math major at the
-                            University of Maryland, where I am focusing on machine learning. Below, you can find some more
-                            information on my experiences, the projects I have been involved in, and classes I have taken.
-                            <br></br>Thanks for visiting :)
-                            <br></br><br></br>
-                            Find my contact details <a href="#download">here</a>
-                        </p1>
+                </div>
+                <div className="experience-item">
+                    <img src={umd} alt="ta" />
+                    <div>
+                        <h3>Teaching Assistant</h3>
+                        <span className="date">August 2022 - December 2023</span>
+                        Undergraduate Teaching Assistant for the Computer Science program's Object-Oriented Programming I and II courses (CMSC131 & CMSC132).
+                        <br></br>
+                        Responsibilities included leading discussion classes for ~30 students, preparing class materials, proctoring weekly quizzes, and holding office hours to help students with any questions about class material and projects.
+                    </div>
+                </div>
+                <div className="experience-item">
+                    <img src={balloon} alt="Aerial Object Detector" />
+                    <div>
+                        <h3>Aerial Object Detector</h3>
+                        <span className="date">February 2023</span>
+                        Developed a computer vision model which uses YOLOv5 and transfer learning to detect balloons in images and videos.
+                        <br></br>
+                        <a href="https://github.com/MukundShankar-dev/aerial-object-classification" target="_blank" rel="noopener noreferrer"> Visit the repository for documentation and info</a>
+                        <br></br>
+                        <span className="highlight">This project won first place in the Northrop Grumman Hack Week Contest in 2023</span>
                     </div>
                 </div>
             </div>
 
-            {/* Experiences */}
-            <div class="experiences-section">
-                <h1>Experiences & Projects</h1>
-                <div class="experiences-container">
-
-                    <div class="experience">
-                        <div class="ribbon">
-                            <div class="dot-red"></div>
-                            <div class="dot-amber"></div>
-                            <div class="dot-green"></div>
-                        </div>
-                        <div class="exp-text">
-                            <h2>Undergraduate Researcher</h2>
-                            <p>Worked in Dr. Abhinav Shrivastava's group, researching dynamic planning for robots using reinforcement learning. Worked on image processing using Intel RealSense depth cameras.
-                                Working on developing a model to well condition a latent space between text and human motion representations.<br></br>
-                            </p>
-
-                            <img src={umd} alt="University of Maryland" />
-
-                            <p>
-                                <br></br><br></br>
-                                Duration: July 2023 - Current
-                            </p>
-                            <p><strong>Skills: </strong>python, torch(lightning), hydra, SLURM</p>
-                        </div>
-                    </div>
-
-                    <div class="experience">
-                        <div class="ribbon">
-                            <div class="dot-red"></div>
-                            <div class="dot-amber"></div>
-                            <div class="dot-green"></div>
-                        </div>
-                        <div class="exp-text">
-                            <h2>Undergraduate Teaching Assistant</h2>
-                            <p>Undergraduate Teaching Assistant for the Computer Science program's Object-Oriented Programming I and II
-                                courses (CMSC131 & CMSC132).<br></br>
-                            </p>
-
-                            <img src={umd} alt="University of Maryland" />
-
-                            <p>
-                                Responsibilities included leading discussion classes for ~30 students,
-                                preparing class materials, proctoring weekly quizzes, and holding office hours to help students with any
-                                questions about class material and projects.
-                                <br></br><br></br>
-                                Duration: August 2022 - December 2023
-                            </p>
-                            <p><strong>Skills: </strong>Java, teaching, communication, organization</p>
-                        </div>
-                    </div>
-                    <div class="experience">
-                        <div class="ribbon">
-                            <div class="dot-red"></div>
-                            <div class="dot-amber"></div>
-                            <div class="dot-green"></div>
-                        </div>
-                        <div class="exp-text">
-                            <h2>agora.</h2>
-                            <p>Developed an app which uses Natural Language Processing to generate curated daily meal plans for users
-                                based on input text. Used Amazon SageMaker to train and deploy model on our API, and used MongoDB
-                                to store data to retrain model on.
-                            </p>
-
-                            <img src={agora} width="10%" height="50px" alt="agora." />
-
-                            <a href="https://master.d1frbpmrrocpzu.amplifyapp.com" target="_blank">Link to website</a>
-                            <br></br>
-                            <a href="https://apps.apple.com/us/app/agora/id6462011570?ign-itscg=30200&ign-itsct=apps_box_badge" target="_blank">On the app store</a>
-                            <p><strong>Skills: </strong>Large Language Models, React, Express, MongoDB, AWS (SageMaker)</p>
-                        </div>
-                    </div>
-                    <div class="experience">
-                        <div class="ribbon">
-                            <div class="dot-red"></div>
-                            <div class="dot-amber"></div>
-                            <div class="dot-green"></div>
-                        </div>
-                        <div class="exp-text">
-                            <h2>Aerial Object Detector</h2>
-                            <p>Developed a computer vision model which uses YOLOv5 and transfer learning to
-                                detect balloons in images and videos.<br></br>
-                            </p>
-
-                            <img src={balloon} alt="Project 1" />
-
-                            <p1>This won first place in the Northrop Grumman Hack Week Contest in 2023</p1>
-                            <br></br>
-                            <a href="https://github.com/MukundShankar-dev/aerial-object-classification" target="_blank">Link to repo with more info</a>
-                            <p><strong>Skills: </strong>PyTorch, matplotlib, seaborn, YOLOv5</p>
-                        </div>
-                    </div>
+            <div className="coursework">
+                <h2>BS. Computer Science (Hons.) + Mathematics. Robotics & Autonomous Systems Minor</h2>
+                Below, you can find a list of relevant coursework.<br></br> <br></br>
+                <div className="course-grid">
+                    <div><a href="https://www.cs.umd.edu/class/spring2024/cmsc472/" target="_blank" rel="noopener noreferrer">CMSC472 - Intro to Deep Learning</a></div>
+                    <div><a href="https://www.cs.umd.edu/class/fall2024/cmsc422-0101/" target="_blank" rel="noopener noreferrer">CMSC422 - Intro to ML</a></div>
+                    <div>CMSC421 - Intro to AI</div>
+                    <div><a href="https://cmsc426.github.io/" target="_blank" rel="noopener noreferrer">CMSC426 - Computer Vision</a></div>
+                    <div>STAT420 - Theory and Methods of Statistics</div>
+                    <div>MATH401 - Applications of Linear Algebra</div>
+                    <div>AMSC466 - Numerical Analysis</div>
+                    <div>ENEE467 - Robotics Project Laboratory</div>
+                    <div>ENAE450 - Robotics Programming</div>
+                    <div>ENME480 - Introduction to Robotics</div>
+                    <div>CMSC420 - Data Structures</div>
+                    <div>MATH410 - Advanced Calculus</div>
+                    <div>CMSC351 - Algorithms</div>
+                    <div><a href="https://bakalian.cs.umd.edu/330/syllabus" target="_blank" rel="noopener noreferrer">CMSC330 - Organization of Programming Languages</a></div>
+                    <div>CMSC320 - Data Science</div>
+                    <div>MATH240 - Introduction to Linear Algebra</div>
+                    <div>MATH246 - Differential Equations</div>
+                    <div>MATH241 - Multivariate Calculus</div>
+                    <div>CMSC216 - Introduction to Computer Systems</div>
+                    <div>CMSC250 - Discrete Systems</div>
+                    <div>CMSC132 - Object Oriented Programming II</div>
                 </div>
             </div>
-
-            <div class="education-section" id="education section">
-                <h1>Education - BS. Computer Science (Hons) + Mathematics</h1>
-                <h2>Robotics & Autonomous Systems minor</h2>
-                <div class="course-grid">
-                    <div class="course">CMSC472 - Intro to Deep Learning</div>
-                    <div class="course">STAT420 - Theory and Methods of Statistics</div>
-                    <div class="course">ENAE450 - Robotics Programming</div>
-                    <div class="course">ENME480 - Introduction to Robotics</div>
-                    <div class="course">CMSC420 - Data Structures</div>
-                    <div class="course">CMSC421 - Intro to AI</div>
-                    <div class="course">CMSC426 - Computer Vision</div>
-                    <div class="course">MATH410 - Advanced Calculus</div>
-                    {/* <div class="course">CMSC422 - Machine Learning</div> */}
-                    <div class="course">CMSC351 - Algorithms</div>
-                    <div class="course">CMSC330 - Organization of Programming Languages</div>
-                    <div class="course">CMSC320 - Data Science</div>
-                    <div class="course">MATH240 - Introduction to Linear Algebra</div>
-                    <div class="course">MATH246 - Differential Equations</div>
-                    <div class="course">MATH241 - Multivariate Calculus</div>
-                    <div class="course">CMSC216 - Introduction to Computer Systems</div>
-                    <div class="course">CMSC250 - Discrete Systems</div>
-                    <div class="course">CMSC132 - Object Oriented Programming II</div>
-                </div>
-            </div>
-
-            <div class="contact-section">
-                <div class="head">
-                    <h1>Contact & Resume</h1>
-                </div>
-                <div class="top">
-                    <div class="header">
-                        <div class="ribbon">
-                            <div class="dot-red"></div>
-                            <div class="dot-amber"></div>
-                            <div class="dot-green"></div>
-                        </div>
-                        <div class="email">
-                            <p>Phone: 240-413-1166</p>
-                            <p>Email: <a href="mailto:smukund23@gmail.com" target="_blank">smukund23@gmail.com</a> </p>
-                            <p></p><a id="download" href={resume} download>Download Resume</a>
-                            <p></p><a href="https://www.github.com/mukundshankar-dev" target="_blank">GitHub</a>
-                            <p></p><a href="https://www.linkedin.com/in/mukund~shankar/" target="_blank">LinkedIn</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div >
-    )
+        </div>
+    );
 }
 
 export default App;
