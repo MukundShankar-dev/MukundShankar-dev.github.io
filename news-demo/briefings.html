@@ -151,6 +151,11 @@
             transition: all 0.3s ease;
         }
 
+        /* Collapsed state by default */
+        .briefing-card.collapsed .briefing-body {
+            display: none;
+        }
+
         .briefing-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -161,9 +166,31 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 2rem;
             padding-bottom: 1.5rem;
             border-bottom: 2px solid rgba(100, 181, 246, 0.2);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .briefing-header:hover {
+            opacity: 0.8;
+        }
+
+        /* Expand/collapse indicator */
+        .briefing-header::after {
+            content: '▼';
+            color: #64b5f6;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .briefing-card:not(.collapsed) .briefing-header::after {
+            transform: rotate(-180deg);
+        }
+
+        .briefing-body {
+            margin-top: 2rem;
         }
 
         .briefing-title {
@@ -228,6 +255,31 @@
             color: #e1e8ed;
             font-size: 0.95rem;
             line-height: 1.6;
+        }
+
+        /* (1.5) QUICK SUMMARY SECTION */
+        .quick-summary {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(144, 202, 249, 0.08);
+            border-left: 4px solid #90caf9;
+            border-radius: 8px;
+        }
+
+        .quick-summary h4 {
+            font-size: 1rem;
+            color: #90caf9;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .summary-text {
+            color: #c5d2e0;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            font-weight: 400;
         }
 
         /* (2) SALIENCE SECTION */
@@ -585,6 +637,10 @@
 
         /* Mobile responsive */
         @media (max-width: 768px) {
+            .fixed-header {
+                padding: 1rem 1.25rem;
+            }
+
             .briefings-grid {
                 max-width: 100%;
                 gap: 1.5rem;
@@ -604,7 +660,13 @@
             }
 
             .header-left h1 {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
+                margin: 0;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.85rem;
+                font-size: 0.85rem;
             }
 
             .header-stats {
@@ -620,7 +682,7 @@
 
             .content {
                 padding: 1rem;
-                margin-top: 180px; /* More space for taller mobile header */
+                margin-top: 160px; /* Adjusted for mobile header */
             }
 
             .briefing-card {
@@ -638,13 +700,18 @@
             }
             
             /* Make sections more compact on mobile */
-            .drivers-section, .salience-section, .theater-section, .escalation-section, .perspectives {
+            .drivers-section, .quick-summary, .salience-section, .theater-section, .escalation-section, .perspectives {
                 padding: 1rem;
                 margin-bottom: 1.5rem;
             }
 
-            .drivers-section h4, .salience-section h4, .theater-section h4, .escalation-section h4 {
+            .drivers-section h4, .quick-summary h4, .salience-section h4, .theater-section h4, .escalation-section h4 {
                 font-size: 0.9rem;
+            }
+
+            .summary-text {
+                font-size: 0.85rem;
+                line-height: 1.6;
             }
 
             .drivers-list li, .tier-list li {
@@ -733,7 +800,7 @@
                 font-size: 1.1rem;
             }
 
-            .drivers-section, .salience-section, .theater-section, .escalation-section, .perspectives {
+            .drivers-section, .quick-summary, .salience-section, .theater-section, .escalation-section, .perspectives {
                 padding: 0.75rem;
             }
 

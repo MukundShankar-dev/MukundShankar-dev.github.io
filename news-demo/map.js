@@ -176,10 +176,19 @@ function showTooltip(event, hotspot) {
         .style('left', (event.pageX + 15) + 'px')
         .style('top', (event.pageY + 15) + 'px')
         .classed('visible', true);
+    
+    // Keep tooltip visible when hovering over it
+    tooltip.on('mouseleave', hideTooltip);
 }
 
 function hideTooltip() {
-    d3.select('#tooltip').classed('visible', false);
+    const tooltip = d3.select('#tooltip');
+    // Small delay to allow moving from country to tooltip
+    setTimeout(() => {
+        if (!tooltip.node().matches(':hover')) {
+            tooltip.classed('visible', false);
+        }
+    }, 100);
 }
 
 function formatLocalTime(isoString) {

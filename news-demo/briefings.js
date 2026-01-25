@@ -92,6 +92,62 @@ function renderBriefings(hotspots) {
             `;
         }
         
+        // (1.5) QUICK SUMMARY - Brief overview before detailed sections
+        let quickSummaryHTML = '';
+        if (hotspot.briefing) {
+            // Extract first fact from each theme for quick overview
+            const briefingLines = hotspot.briefing.split('\n').filter(l => l.trim());
+            const summaryPoints = [];
+            
+            // Get first bullet point from each theme (simple heuristic)
+            let currentTheme = '';
+            let pointsPerTheme = {};
+            
+            for (let line of briefingLines) {
+                // Check if it's a theme header (bold text without colon)
+                if (line.includes('**') && !line.includes(':') && !line.startsWith('•')) {
+                    currentTheme = line.replace(/\*\*/g, '').trim();
+                    pointsPerTheme[currentTheme] = [];
+                } else if (line.startsWith('•') && currentTheme) {
+                    // Add first bullet of each theme to summary
+                    if (pointsPerTheme[currentTheme].length === 0) {
+                        pointsPerTheme[currentTheme].push(line.substring(1).trim());
+                    }
+                }
+            }
+            
+            // Build summary from collected points (max 4 for brevity)
+            const allPoints = Object.values(pointsPerTheme).flat().slice(0, 4);
+            
+            if (allPoints.length > 0) {
+                quickSummaryHTML = `
+                    <div class="quick-summary">
+                        <h4>At a Glance</h4>
+                        <div class="summary-text">
+                            ${allPoints.map(point => {
+                                // Clean up the point - remove markdown, keep just the key info
+                                let cleaned = point
+                                    .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
+                                    .replace(/\[(.*?)\]/g, '') // Remove scope brackets
+                                    .replace(/_\([^)]+\)_/g, '') // Remove certainty notes
+                                    .replace(/\([^)]+\)/g, '') // Remove timeframes in parens
+                                    .trim();
+                                
+                                // Extract just actor and action (first two parts before colon)
+                                const parts = cleaned.split(':');
+                                if (parts.length >= 2) {
+                                    const actor = parts[0].trim();
+                                    const action = parts[1].trim().split('.')[0]; // First sentence only
+                                    return `${actor}: ${action}.`;
+                                }
+                                return cleaned;
+                            }).join(' ')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
         // (2) SALIENCE / RANKED THEMES - Organize by tier
         let salienceHTML = '';
         if (Object.keys(themeSalience).length > 0) {
@@ -273,23 +329,38 @@ function renderBriefings(hotspots) {
                 <span class="article-badge">${hotspot.article_count} articles</span>
             </div>
             
-            ${driversHTML}
-            ${salienceHTML}
-            ${theaterHTML}
-            ${escalationHTML}
-            ${perspectivesHTML}
-            ${eventsHTML}
-            ${sourcesHTML}
+            <div class="briefing-body">
+                ${driversHTML}
+                ${quickSummaryHTML}
+                ${salienceHTML}
+                ${theaterHTML}
+                ${escalationHTML}
+                ${perspectivesHTML}
+                ${eventsHTML}
+                ${sourcesHTML}
+            </div>
         `;
+
+        // Add click handler to toggle card
+        const header = card.querySelector('.briefing-header');
+        header.addEventListener('click', (e) => {
+            e.stopPropagation();
+            card.classList.toggle('collapsed');
+        });
+
+        // Start collapsed by default
+        card.classList.add('collapsed');
 
         container.appendChild(card);
     });
 
-    // Handle hash navigation
+    // Handle hash navigation - expand target card
     if (window.location.hash) {
         setTimeout(() => {
             const target = document.querySelector(window.location.hash);
             if (target) {
+                // Expand only this card
+                target.classList.remove('collapsed');
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }, 100);
