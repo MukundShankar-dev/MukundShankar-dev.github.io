@@ -477,6 +477,31 @@
                 filter: none;
             }
         }
+
+        /* Loading indicator */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 14, 39, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-text {
+            color: #64b5f6;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
     </style>
 </head>
 
@@ -530,6 +555,11 @@
 
     <!-- Tooltip -->
     <div class="tooltip" id="tooltip"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-text">Loading briefing...</div>
+    </div>
 
     <script src="map.js"></script>
 </body>
