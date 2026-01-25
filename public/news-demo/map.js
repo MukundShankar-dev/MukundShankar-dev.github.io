@@ -155,7 +155,39 @@ function loadWorldMap() {
                 .on('click', function (event, d) {
                     const hotspot = countryIdToHotspot[String(d.id)];
                     if (hotspot) {
-                        window.location.href = `briefings.html#hotspot-${hotspot.country_code}`;
+                        // Show loading overlay
+                        const loadingOverlay = document.getElementById('loading-overlay');
+                        
+                        // Get the bounds of the clicked country
+                        const bounds = path.bounds(d);
+                        const dx = bounds[1][0] - bounds[0][0];
+                        const dy = bounds[1][1] - bounds[0][1];
+                        const x = (bounds[0][0] + bounds[1][0]) / 2;
+                        const y = (bounds[0][1] + bounds[1][1]) / 2;
+                        
+                        // Calculate zoom scale
+                        const width = window.innerWidth;
+                        const height = window.innerHeight;
+                        const scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height)));
+                        const translate = [width / 2 - scale * x, height / 2 - scale * y];
+                        
+                        // Zoom to country with smooth animation
+                        svg.transition()
+                            .duration(750)
+                            .call(
+                                zoom.transform,
+                                d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+                            );
+                        
+                        // Show loading after brief delay (let zoom start)
+                        setTimeout(() => {
+                            loadingOverlay.classList.add('active');
+                        }, 400);
+                        
+                        // Navigate to briefing after zoom animation
+                        setTimeout(() => {
+                            window.location.href = `briefings.html#hotspot-${hotspot.country_code}`;
+                        }, 850);
                     }
                 });
         })
