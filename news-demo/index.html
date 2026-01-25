@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Tension Map</title>
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            background: #0a0e27;
+        }
+
+        #map-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            background: #0a0e27;
+        }
+
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Floating header - transparent */
+        .floating-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.3);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .floating-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tension-index {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tension-index .label {
+            font-size: 0.85rem;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tension-index .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .tension-index .max {
+            font-size: 1rem;
+            color: #8899aa;
+        }
+
+        .timestamp {
+            font-size: 0.8rem;
+            color: #8899aa;
+        }
+
+        /* View toggle button - transparent */
+        .view-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            color: #e1e8ed;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .view-toggle:hover {
+            background: rgba(100, 181, 246, 0.15);
+            border-color: rgba(100, 181, 246, 0.2);
+            color: #64b5f6;
+            transform: translateY(-2px);
+        }
+
+        /* Map legend - transparent */
+        .map-legend {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            background: rgba(10, 14, 39, 0.3);
+            backdrop-filter: blur(20px);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #e1e8ed;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        .legend-color.low {
+            background: #00ff00;
+        }
+
+        .legend-color.medium {
+            background: #ffff00;
+        }
+
+        .legend-color.high {
+            background: #ff0000;
+        }
+
+        .country {
+            stroke: #2a3f5f;
+            stroke-width: 0.5;
+            transition: stroke 0.2s, stroke-width 0.2s;
+            cursor: pointer;
+        }
+
+        .country.hotspot {
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .country.hotspot:hover {
+            stroke-width: 2;
+            filter: brightness(1.3);
+        }
+
+        /* Tooltip - transparent */
+        .tooltip {
+            position: absolute;
+            padding: 1rem 1.25rem;
+            background: rgba(15, 23, 41, 0.95);
+            color: #e1e8ed;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            min-width: 250px;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-country {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .tooltip-count {
+            color: #8899aa;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tooltip-description {
+            color: #c5d2e0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .tooltip-link {
+            display: inline-block;
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            background: rgba(100, 181, 246, 0.1);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .tooltip-link:hover {
+            background: rgba(100, 181, 246, 0.2);
+            color: #90caf9;
+        }
+
+        /* Zoom controls - transparent */
+        .zoom-controls {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .zoom-btn {
+            background: rgba(10, 14, 39, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            color: #e1e8ed;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            backdrop-filter: blur(20px);
+        }
+
+        .zoom-btn:hover {
+            background: rgba(100, 181, 246, 0.15);
+            border-color: rgba(100, 181, 246, 0.2);
+            color: #64b5f6;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .floating-header {
+                top: 10px;
+                padding: 1rem 1.25rem;
+            }
+
+            .floating-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .header-stats {
+                gap: 1rem;
+                flex-direction: column;
+            }
+
+            .view-toggle {
+                top: auto;
+                bottom: 120px;
+                right: 10px;
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .map-legend {
+                bottom: 20px;
+                right: 10px;
+                padding: 0.75rem;
+            }
+
+            .zoom-controls {
+                top: 80px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating header -->
+    <div class="floating-header">
+        <h1>Global Tension Map</h1>
+        <div class="header-stats">
+            <div class="tension-index">
+                <span class="label">Tension Index:</span>
+                <span class="value" id="tension-value">--</span>
+                <span class="max">/100</span>
+            </div>
+            <div class="timestamp" id="timestamp">Loading...</div>
+        </div>
+    </div>
+
+    <!-- View toggle button -->
+    <a href="briefings.html" class="view-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 3h12v2H2V3zm0 4h12v2H2V7zm0 4h12v2H2v-2z" />
+        </svg>
+        List View
+    </a>
+
+    <!-- Zoom controls -->
+    <div class="zoom-controls">
+        <button class="zoom-btn" id="zoom-in">+</button>
+        <button class="zoom-btn" id="zoom-out">−</button>
+        <button class="zoom-btn" id="zoom-reset" title="Reset view">⌂</button>
+    </div>
+
+    <!-- Map legend -->
+    <div class="map-legend">
+        <div class="legend-item">
+            <div class="legend-color low"></div>
+            <span>Low (1-3)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color medium"></div>
+            <span>Medium (4-8)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color high"></div>
+            <span>High (9+)</span>
+        </div>
+    </div>
+
+    <!-- Map container -->
+    <div id="map-container"></div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="map.js"></script>
+</body>
+
+</html>

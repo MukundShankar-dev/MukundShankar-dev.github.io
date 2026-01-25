@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Tension Map - Briefings</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0e27;
+            color: #e1e8ed;
+            line-height: 1.6;
+        }
+
+        /* Fixed header */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .tension-index {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tension-index .label {
+            font-size: 0.8rem;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tension-index .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .tension-index .max {
+            font-size: 0.9rem;
+            color: #8899aa;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: #8899aa;
+        }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            background: rgba(100, 181, 246, 0.1);
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            border-radius: 8px;
+            color: #64b5f6;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(100, 181, 246, 0.2);
+            border-color: rgba(100, 181, 246, 0.4);
+            transform: translateX(-2px);
+        }
+
+        /* Main content with padding for fixed header */
+        .content {
+            margin-top: 100px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Single column layout for analyst briefing format */
+        .briefings-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .article-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: #c5d2e0;
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Briefing cards - analyst-grade structure */
+        .briefing-card {
+            background: rgba(26, 31, 58, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .briefing-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .briefing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(100, 181, 246, 0.2);
+        }
+
+        .briefing-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .briefing-subtitle {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .tension-badge {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.1));
+            color: #ff6b6b;
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .theater-badge {
+            background: rgba(100, 181, 246, 0.1);
+            color: #64b5f6;
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+        }
+
+        /* (1) DRIVERS SECTION */
+        .drivers-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(100, 181, 246, 0.05);
+            border-left: 4px solid #64b5f6;
+            border-radius: 8px;
+        }
+
+        .drivers-section h4 {
+            font-size: 1rem;
+            color: #64b5f6;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .drivers-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .drivers-list li {
+            padding: 0.5rem 0;
+            color: #e1e8ed;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* (2) SALIENCE SECTION */
+        .salience-section {
+            margin-bottom: 2rem;
+        }
+
+        .salience-tier {
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-header {
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tier-header.tier-1 {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .tier-header.tier-2 {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .tier-header.tier-3 {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .tier-header.tier-4 {
+            background: rgba(158, 158, 158, 0.15);
+            color: #9e9e9e;
+            border: 1px solid rgba(158, 158, 158, 0.3);
+        }
+
+        .tier-list {
+            list-style: none;
+            padding: 0 0 0 2rem;
+            margin: 0;
+        }
+
+        .tier-list li {
+            padding: 0.4rem 0;
+            color: #c5d2e0;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .tier-list li::before {
+            content: "→";
+            position: absolute;
+            left: -1.5rem;
+            color: #64b5f6;
+        }
+
+        .tier-list .score {
+            color: #8899aa;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        /* (3) THEATER SECTION */
+        .theater-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(144, 202, 249, 0.05);
+            border-radius: 8px;
+        }
+
+        .theater-section h4 {
+            font-size: 1rem;
+            color: #90caf9;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .theater-block {
+            margin-bottom: 1rem;
+        }
+
+        .theater-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #90caf9;
+            margin-bottom: 0.5rem;
+        }
+
+        /* (4) ESCALATION SECTION */
+        .escalation-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .escalation-section h4 {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .escalation-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .escalation-indicator.rising {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .escalation-indicator.stable {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .escalation-indicator.cooling {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .trend-icon {
+            font-size: 1.5rem;
+        }
+
+        .trend-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .trend-detail {
+            color: #8899aa;
+            font-size: 0.85rem;
+        }
+
+        /* (5) EVENTS SECTION - Collapsed by default */
+        .events-section {
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .events-header {
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .events-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .events-header h4 {
+            font-size: 0.95rem;
+            color: #8899aa;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toggle-icon {
+            color: #64b5f6;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .events-section.collapsed .events-content {
+            display: none;
+        }
+
+        .events-content {
+            padding: 1.5rem;
+            color: #c5d2e0;
+            line-height: 1.8;
+        }
+
+        /* Theme headers within events - PROMINENT */
+        .events-content .theme-header {
+            font-size: 1.3rem;
+            color: #ffffff;
+            font-weight: 700;
+            margin: 2.5rem 0 1.5rem 0;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, rgba(100, 181, 246, 0.15), rgba(100, 181, 246, 0.05));
+            border-left: 4px solid #64b5f6;
+            border-radius: 8px;
+        }
+
+        .events-content .theme-header:first-child {
+            margin-top: 0;
+        }
+
+        /* Fact lists within events */
+        .events-content .fact-list {
+            list-style: none;
+            margin: 0.5rem 0 1.5rem 0;
+            padding: 0;
+        }
+
+        .events-content .fact-list li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+            color: #c5d2e0;
+        }
+
+        .events-content .fact-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #64b5f6;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .events-content .actor-name {
+            color: #90caf9;
+            font-weight: 600;
+        }
+
+        .events-content .certainty-note {
+            color: #8899aa;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        .events-content p {
+            color: #c5d2e0;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* (6) PERSPECTIVES SECTION */
+        .perspectives {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(100, 181, 246, 0.05);
+            border-radius: 8px;
+        }
+
+        .perspectives h4 {
+            font-size: 1rem;
+            margin-bottom: 1.25rem;
+            color: #64b5f6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .perspective-item {
+            margin-bottom: 1.25rem;
+            padding-left: 1.25rem;
+            border-left: 3px solid rgba(100, 181, 246, 0.4);
+        }
+
+        .perspective-actor {
+            font-weight: 600;
+            color: #64b5f6;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        .perspective-view {
+            color: #c5d2e0;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* (7) SOURCES SECTION - Collapsed by default */
+        .sources-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sources-header {
+            padding: 0.75rem 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sources-header:hover h4 {
+            color: #64b5f6;
+        }
+
+        .sources-header h4 {
+            font-size: 0.85rem;
+            color: #8899aa;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .sources-section.collapsed .sources-content {
+            display: none;
+        }
+
+        .sources-content {
+            padding-top: 1rem;
+        }
+
+        .source-link {
+            display: block;
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+            transition: color 0.2s;
+            line-height: 1.5;
+        }
+
+        .source-link:hover {
+            color: #90caf9;
+        }
+
+        .source-outlet {
+            color: #8899aa;
+            font-size: 0.8rem;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .briefings-grid {
+                max-width: 100%;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .content {
+                padding: 1rem;
+                margin-top: 140px;
+            }
+
+            .briefing-card {
+                padding: 1.5rem;
+            }
+            
+            .briefing-title {
+                font-size: 1.3rem;
+            }
+            
+            .drivers-section, .salience-section, .theater-section, .escalation-section, .perspectives {
+                padding: 1rem;
+            }
+            
+            .tier-list {
+                padding-left: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Fixed header -->
+    <div class="fixed-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="index.html" class="back-btn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0L0 8l8 8 1.5-1.5L3 8l6.5-6.5L8 0z" />
+                    </svg>
+                    Map View
+                </a>
+                <h1>Today's Hotspots</h1>
+            </div>
+            <div class="header-stats">
+                <div class="tension-index">
+                    <span class="label">Tension Index:</span>
+                    <span class="value" id="tension-value">--</span>
+                    <span class="max">/100</span>
+                </div>
+                <div class="timestamp" id="timestamp">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+        <div class="briefings-grid" id="briefings-container"></div>
+    </div>
+
+    <script src="briefings.js"></script>
+</body>
+
+</html>
