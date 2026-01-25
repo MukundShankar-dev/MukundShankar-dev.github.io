@@ -587,32 +587,178 @@
         @media (max-width: 768px) {
             .briefings-grid {
                 max-width: 100%;
+                gap: 1.5rem;
             }
 
             .header-content {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+                width: 100%;
+            }
+
+            .header-left h1 {
+                font-size: 1.2rem;
+            }
+
+            .header-stats {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                width: 100%;
+            }
+
+            .tension-index {
+                flex-wrap: wrap;
             }
 
             .content {
                 padding: 1rem;
-                margin-top: 140px;
+                margin-top: 180px; /* More space for taller mobile header */
             }
 
             .briefing-card {
-                padding: 1.5rem;
+                padding: 1.25rem;
             }
             
             .briefing-title {
                 font-size: 1.3rem;
             }
+
+            .briefing-subtitle {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
             
+            /* Make sections more compact on mobile */
             .drivers-section, .salience-section, .theater-section, .escalation-section, .perspectives {
                 padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .drivers-section h4, .salience-section h4, .theater-section h4, .escalation-section h4 {
+                font-size: 0.9rem;
+            }
+
+            .drivers-list li, .tier-list li {
+                font-size: 0.85rem;
+                line-height: 1.5;
             }
             
             .tier-list {
                 padding-left: 1.5rem;
+            }
+
+            .tier-header {
+                font-size: 0.85rem;
+                padding: 0.6rem 0.85rem;
+            }
+
+            /* Collapsible sections - easier to tap */
+            .events-header, .sources-header {
+                padding: 1rem;
+                min-height: 48px; /* Touch-friendly target */
+            }
+
+            .events-header h4, .sources-header h4 {
+                font-size: 0.8rem;
+            }
+
+            .events-content, .sources-content {
+                padding: 1rem;
+            }
+
+            /* Make theme headers smaller on mobile */
+            .events-content .theme-header {
+                font-size: 1.1rem;
+                padding: 0.85rem 1rem;
+                margin: 1.5rem 0 1rem 0;
+            }
+
+            /* Adjust fact lists */
+            .events-content .fact-list li {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                padding-left: 1.25rem;
+            }
+
+            /* Source links easier to tap */
+            .source-link {
+                padding: 0.5rem 0;
+                font-size: 0.8rem;
+            }
+
+            /* Escalation indicator */
+            .escalation-indicator {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 0.85rem;
+            }
+
+            .trend-detail {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Tablet responsive (768px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .briefings-grid {
+                max-width: 90%;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            .briefing-card {
+                padding: 1.75rem;
+            }
+        }
+
+        /* Small phones (< 375px) */
+        @media (max-width: 374px) {
+            .fixed-header {
+                padding: 1rem;
+            }
+
+            .briefing-title {
+                font-size: 1.1rem;
+            }
+
+            .drivers-section, .salience-section, .theater-section, .escalation-section, .perspectives {
+                padding: 0.75rem;
+            }
+
+            .briefing-card {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 0.75rem;
+                margin-top: 200px;
+            }
+        }
+
+        /* Landscape orientation fixes */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .content {
+                margin-top: 120px;
+            }
+
+            .fixed-header {
+                padding: 0.75rem 1.5rem;
+            }
+
+            .header-left h1 {
+                font-size: 1.1rem;
             }
         }
     </style>
