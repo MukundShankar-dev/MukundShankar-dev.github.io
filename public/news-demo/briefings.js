@@ -292,29 +292,8 @@ function renderBriefings(hotspots) {
             `;
         }
         
-        // (7) SOURCES - Collapsed at bottom, all sources sorted by quality
-        const tierOrder = {'A': 1, 'B': 2, 'C': 3, 'D': 4};
-        const sortedSources = [...hotspot.sources].sort((a, b) => {
-            const tierA = tierOrder[a.tier] || 5;
-            const tierB = tierOrder[b.tier] || 5;
-            return tierA - tierB;
-        });
-        
-        const sourcesHTML = `
-            <div class="sources-section collapsed">
-                <div class="sources-header" onclick="toggleSources(this)">
-                    <h4>Sources (${hotspot.sources.length} total)</h4>
-                    <span class="toggle-icon">▼</span>
-                </div>
-                <div class="sources-content">
-                    ${sortedSources.map(source => `
-                        <a href="${source.url}" target="_blank" class="source-link">
-                            ${source.title} <span class="source-outlet">(${source.source})</span>
-                        </a>
-                    `).join('')}
-                </div>
-            </div>
-        `;
+        // Sources section removed - not available in weekly aggregated data
+        const sourcesHTML = '';
         
         // Assemble card in correct order
         card.innerHTML = `
@@ -398,18 +377,89 @@ function formatLocalTime(isoString) {
     });
 }
 
+// Render possible stories section
+function renderPossibleStories(possibleStoriesByCountry) {
+    if (!possibleStoriesByCountry || Object.keys(possibleStoriesByCountry).length === 0) {
+        return '';
+    }
+    
+    let html = `
+        <div class="possible-stories-section">
+            <h2 class="possible-stories-title">Other Possible Stories</h2>
+            <div class="possible-stories-note">
+                Additional stories identified from RSS feeds with limited source content. 
+                These are analyzed from headlines only.
+            </div>
+    `;
+    
+    for (const [countryCode, data] of Object.entries(possibleStoriesByCountry)) {
+        const themes = data.themes || [];
+        const articles = data.articles || [];
+        
+        html += `
+            <div class="possible-country-section">
+                <h3 class="possible-country-name">${countryCode} (${data.count} stories)</h3>
+        `;
+        
+        for (const theme of themes) {
+            html += `
+                <div class="possible-theme">
+                    <div class="possible-theme-name">${theme.name}</div>
+                    <div class="possible-theme-summary">${theme.summary}</div>
+                    <ul class="possible-articles-list">
+            `;
+            
+            // Show articles for this theme
+            const themeArticleIndices = theme.articles || [];
+            for (const idx of themeArticleIndices.slice(0, 5)) { // Max 5 per theme
+                const article = articles[idx - 1]; // 1-indexed to 0-indexed
+                if (article) {
+                    html += `
+                        <li>
+                            <a href="${article.url}" target="_blank" class="possible-article-link">
+                                ${article.title}
+                            </a>
+                            <span class="possible-article-meta">
+                                ${article.source} • ${article.tier} • ${article.perspective}
+                            </span>
+                        </li>
+                    `;
+                }
+            }
+            
+            html += `
+                    </ul>
+                </div>
+            `;
+        }
+        
+        html += `</div>`;
+    }
+    
+    html += `</div>`;
+    
+    return html;
+}
+
 async function loadData() {
     try {
         const response = await fetch('data/daily_briefing.json');
         const data = await response.json();
 
-        // Use aggregated hotspots from all 7 days
-        document.getElementById('tension-value').textContent =
-            Math.round(data.average_tension_index);
+        // Calculate average salience for tension index
+        const avgSalience = data.hotspots.reduce((sum, h) => sum + (h.salience || 100), 0) / data.hotspots.length;
+        document.getElementById('tension-value').textContent = Math.round(avgSalience);
         document.getElementById('timestamp').textContent = 
-            `7-day average (updated: ${formatLocalTime(data.aggregated_at)})`;
+            `7-day average (updated: ${formatLocalTime(data.generated_at || data.date_range.end)})`;
 
-        renderBriefings(data.aggregated_hotspots);
+        renderBriefings(data.hotspots);
+        
+        // Render possible stories if available
+        const possibleStoriesHTML = renderPossibleStories(data.possible_stories);
+        if (possibleStoriesHTML) {
+            const container = document.getElementById('briefings-container');
+            container.insertAdjacentHTML('beforeend', possibleStoriesHTML);
+        }
 
     } catch (error) {
         console.error('Error loading data:', error);

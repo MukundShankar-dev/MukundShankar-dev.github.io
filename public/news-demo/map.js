@@ -240,16 +240,16 @@ async function loadData() {
         const response = await fetch('data/daily_briefing.json');
         const data = await response.json();
 
-        // Use aggregated hotspots from all 7 days
-        hotspotsData = data.aggregated_hotspots;
+        // Use hotspots from the weekly data
+        hotspotsData = data.hotspots;
 
-        console.log('Loaded aggregated hotspots:', hotspotsData);
+        console.log('Loaded hotspots:', hotspotsData);
 
-        // Show average tension index across the week
-        document.getElementById('tension-value').textContent =
-            Math.round(data.average_tension_index);
+        // Calculate average salience for tension index
+        const avgSalience = data.hotspots.reduce((sum, h) => sum + (h.salience || 100), 0) / data.hotspots.length;
+        document.getElementById('tension-value').textContent = Math.round(avgSalience);
         document.getElementById('timestamp').textContent = 
-            `7-day average (updated: ${formatLocalTime(data.aggregated_at)})`;
+            `7-day average (updated: ${formatLocalTime(data.generated_at || data.date_range.end)})`;
 
         loadWorldMap();
 
