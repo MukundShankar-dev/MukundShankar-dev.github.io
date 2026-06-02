@@ -8,6 +8,7 @@ import resume from './files/resume.pdf';
 import balloon from './files/balloons.jpeg';
 import juume from './files/juume.png';
 import nlp_report from './files/723_report.pdf';
+import tool_call_report from './files/tool_call_report.pdf';
 
 function App() {
     return (
@@ -32,6 +33,18 @@ function App() {
 
             <div className="experiences">
                 <h2>Experiences/Projects</h2>
+                <div className="experience-item">
+                    <img src={git} alt="NLP Report" />
+                    <div>
+                        <h3>Diagnozing Tool-Call Decision Making in Small Language Models</h3>
+                        <span className="date">February 2026 - May 2026</span>
+                        Developed a tool-call decision framework for small LMs that benchmarks prompting, SFT, DPO, and Constitutional AI-style supervision on When2Call. Improved decision accuracy over zero-shot baselines with SFT and CAI-DPO, and trained linear probes showing correct tool-use decisions are often recoverable from hidden states even when final outputs are incorrect.
+                        <br></br>
+                        <a href={tool_call_report} target="_blank" rel="noopener noreferrer">Read the full report here</a>
+                        <br></br>
+                        <a href="https://github.com/anirudhporuri/tool-call-decision-making/" target="_blank" rel="noopener noreferrer"> View the code repository here</a>
+                    </div>
+                </div>
                 <div className="experience-item">
                     <img src={git} alt="NLP Report" />
                     <div>
