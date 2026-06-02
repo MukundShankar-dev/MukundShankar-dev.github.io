@@ -128,7 +128,8 @@ function App() {
             </div>
 
             <div className="coursework">
-                <h2>BS. Computer Science (Hons.) + Mathematics. Robotics & Autonomous Systems Minor</h2>
+                <h1>M.S. Computer Science</h1>
+                <h3>B.S. Computer Science (Hons.) + Mathematics. Robotics & Autonomous Systems Minor</h3>
                 Below, you can find a list of relevant coursework.<br></br> <br></br>
                 <div className="course-grid">
                     <div><a href="https://users.umiacs.umd.edu/~ying/teaching/CMSC_848/" target="_blank" rel="noopener noreferrer">CMSC848Q - Good AI Answers To Questions</a></div>
