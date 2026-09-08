@@ -18,7 +18,7 @@ h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
 h3 { font-size: 1.15rem; margin-top: 32px; }
 .journal-index { margin: 32px 0; }
 .journal-index h2 { font-size: 1.2rem; }
-.journal-index > a { display: grid; grid-template-columns: 140px 1fr; gap: 12px; border-bottom: 1px solid var(--line); padding: 16px 0; text-decoration: none; line-height: 1.5; }
+.journal-index > a { display: grid; grid-template-columns: 80px 1fr; gap: 12px; border-bottom: 1px solid var(--line); padding: 16px 0; text-decoration: none; line-height: 1.5; }
 .journal-index .index-phase { font-size: 0.8rem; color: var(--muted); padding-top: 3px; }
 .journal-index > a:hover span { text-decoration: underline; }
 .journal-entry { padding: 36px 0 48px; border-top: 1px solid var(--line); }
