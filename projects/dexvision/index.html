@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="DexVision development journal: building reusable robot skills for an LLM orchestrator, from an OpenCV camera test through teleoperation, demonstration data, failed learning experiments, and a MuJoCo workcell." />
+    <meta name="theme-color" content="#98452f" />
+    <link rel="canonical" href="https://mukundshankar-dev.github.io/projects/dexvision/" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/projects/journal.css" />
+    <title>DexVision — Project Journal | Mukund Shankar</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="journal-shell">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/">Mukund Shankar</a>
+        <a href="/#projects">← All experiences &amp; projects</a>
+      </nav>
+      <main id="main-content">
+        <header class="project-header">
+          <p class="eyebrow">June 2026 – Present</p>
+          <h1>DexVision</h1>
+          <p>I want to build a robot that can take a request like “put this part on the inspection pad and press Start,” then carry it out using a small set of reusable skills. The eventual LLM orchestrator will choose which skills to call and with what parameters. The skills themselves need to work first.</p>
+          <p>I started with something much smaller: opening a webcam and making a simulated hand follow mine. This is the development log from there—what I implemented, what broke when I tried it, and what I changed. The first four phases below are reconstructed from my checkpoint notes, written up on <time datetime="2026-09-08">September 8, 2026</time>.</p>
+          <p><a href="https://github.com/MukundShankar-dev/DexVision" target="_blank" rel="noopener noreferrer">Code and checkpoint notes on GitHub ↗</a></p>
+        </header>
+
+        <nav class="journal-index" aria-label="Journal entries">
+          <h2>Read from the beginning</h2>
+          <a href="#hand-control"><span class="index-phase">Phase 1 · June</span><span>Camera input, hand tracking, and teleoperation</span></a>
+          <a href="#demonstration-data"><span class="index-phase">Phase 2 · Jun–Sep</span><span>Recording demonstrations—and getting them to replay</span></a>
+          <a href="#learning-loop"><span class="index-phase">Phase 3 · Sep 3</span><span>Training the first policies and finding out why they failed</span></a>
+          <a href="#pick-place-anchor"><span class="index-phase">Phase 4 · Sep 3–8</span><span>A workcell, a failed control pilot, and scripted experts</span></a>
+        </nav>
+
+        <article class="journal-entry" id="hand-control" aria-labelledby="hand-title">
+          <header>
+            <p class="eyebrow">Phase 1 · June 2026</p>
+            <h2 id="hand-title">Camera input, hand tracking, and teleoperation</h2>
+          </header>
+          <p>The first goal was basic teleoperation: move my hand in front of a camera and have a simulated hand follow it. I built the camera, tracking, feature extraction, and simulation checks separately before connecting them. That made it possible to tell which part was wrong when the combined system behaved badly.</p>
+
+          <h3 id="camera-test">Opening the camera and checking the frame rate</h3>
+          <p class="checkpoint">Checkpoints 1.0–1.1</p>
+          <p>I started with a Python health check for NumPy, OpenCV, MediaPipe, and MuJoCo. Then I wrapped OpenCV's <code>cv2.VideoCapture</code> in a small camera class with configurable camera ID and resolution, a frame-read method, and a clean shutdown. The first app simply opened the feed, displayed FPS, and exited on <code>q</code>. The live check ran at about 30 FPS.</p>
+          <p>At this point there was no hand detection or robot. I wanted to establish that the camera could deliver frames consistently and that a missing device produced a useful error. The automated camera tests used a mock frame source so they could run without opening a webcam.</p>
+
+          <h3 id="hand-landmarks">Adding MediaPipe hand landmarks</h3>
+          <p class="checkpoint">Checkpoint 1.2</p>
+          <p>Hand tracking uses MediaPipe Hands, with a Tasks Hand Landmarker backend for MediaPipe installations that no longer expose the older Hands API. The Tasks path loads the local <code>hand_landmarker.task</code> model and processes timestamped frames in video mode. OpenCV provides BGR frames, so the tracker converts them to RGB first.</p>
+          <p>The result is 21 hand landmarks, plus handedness and its confidence score. I drew the points and skeleton connections over the camera feed and checked an open palm, a fist, fast movement, and what happened when the hand left the frame. Missing detections return an explicit no-hand result rather than leaving downstream code to interpret an incomplete landmark array.</p>
+          <p>The left/right labels needed correcting. MediaPipe's handedness convention assumes a selfie-mirrored image, while the normal OpenCV input was unmirrored. I flipped the labels for that input and kept an option for cameras that already supply mirrored frames. I then checked both hands against the displayed labels.</p>
+
+          <h3 id="first-features">Turning landmarks into finger controls</h3>
+          <p class="checkpoint">Checkpoint 1.3</p>
+          <p>I did not train a separate model to estimate finger controls. I used geometry computed from the landmarks: a normalized curl value for each finger, thumb–index pinch distance, and palm-orientation proxies. Curl ran from zero for an open finger to one for a closed finger. Live bars next to the camera image made those values inspectable before they drove anything.</p>
+          <p>The first checks were simple: an open hand should produce low curls, a fist should produce high curls, and pointing should leave the index open while the other fingers closed. Those broad poses were enough to get the first feature extractor running. They were not enough to catch how much one finger's value could change when the surrounding hand pose changed; that became obvious during the one-finger robot test.</p>
+
+          <h3 id="feature-smoothing">Reducing jitter before sending commands</h3>
+          <p class="checkpoint">Checkpoint 1.4; revisited after 1.3B</p>
+          <p>The raw values fluctuated between frames, which would turn into choppy joint motion. I added an exponential moving average and displayed raw and smoothed values together. Each update blends the new measurement with the previous smoothed value: <code>s = α × x + (1 − α) × s_previous</code>. A smaller alpha reduces jitter but also makes the response lag.</p>
+          <p>The smoother holds the last stable controls when confidence drops; it can also be configured to decay toward a neutral pose. Tests covered noisy input, a sudden step change, and missing values. The implementation stayed with the EMA. The One Euro Filter was listed as a possible later alternative, but was not used here. After the finger-feature rewrite, I smoothed extension and derived bend from that smoothed value.</p>
+
+          <h3 id="simulation-checks">Checking the simulator without the camera</h3>
+          <p class="checkpoint">Checkpoints 1.5–1.9</p>
+          <p>I first loaded a minimal MuJoCo scene with a floor and a cube and checked that it could reset and step. Next came a simple hand model: discover its joints and actuators, drive one index joint with a periodic command, then play configured open, fist, point, pinch, peace, and relaxed poses.</p>
+          <p>That simple hand became a debug model. Before recording any demonstrations, I selected the right Shadow Hand E3M5 from Google DeepMind's MuJoCo Menagerie as the final model. Its joint names, limits, and 20 actuators would define the saved action format. Some finger joints are coupled through tendon actuators, so the mapping could not assume one independent actuator for every visible joint.</p>
+          <p>The first retargeter interpolated configured open/closed robot targets from the human finger controls, with per-finger scaling and limit clipping. “Retargeting” here means translating a human hand measurement into commands for a hand with different joints and proportions. I checked the scripted robot gestures before introducing live camera input.</p>
+
+          <h3 id="finger-coupling">The index finger test exposed a feature problem</h3>
+          <p class="checkpoint">Checkpoint 1.10 → reopened as 1.3B</p>
+          <p>I connected only my index finger to the robot index finger and held every other robot finger open. The robot followed the reported index command, and the other robot fingers stayed still. But a similar-looking human index pose could produce a very different command depending on what my other fingers were doing. Pointing gave a value around 0.17; a fist gave roughly 0.70–0.78; changing the surrounding fingers could push the value into the curled range even without the intended index movement.</p>
+          <p>That separated two possible causes. The retargeter was not leaking the command into other robot fingers. The feature extractor was producing a coupled or unstable input. I reopened feature extraction rather than changing robot joint limits to compensate.</p>
+          <p>The replacement gives each long finger its own MCP/PIP/DIP/tip chain: the base knuckle, two finger joints, and fingertip. Curl is computed from local joint bend angles. Extension measures the tip's displacement from its own base along the palm's forward axis, normalized by the finger-chain length. The palm frame comes from the wrist and index, middle, and pinky knuckles. Thumb geometry is handled separately using its CMC/MCP/IP/tip chain and an opposition measure.</p>
+          <p>This improved independence, but the raw curl bars still did not match the live pose as intuitively as extension did. For the four long fingers I changed the actual robot-control signal to <code>bend = clamp(1 − extension, 0, 1)</code>. Raw curl remained visible for diagnosis. The thumb retained a more conservative mapping.</p>
+          <p>I added synthetic checks for each finger raised on its own, a peace sign, partial fists, pinch, and index movement with the other fingers fixed. Then I reran the live feature viewer and the one-finger robot test. The revised bend signal passed manual review on June 11.</p>
+
+          <h3 id="full-hand">Connecting the rest of the hand</h3>
+          <p class="checkpoint">Checkpoints 1.11–1.12</p>
+          <p>With the one-finger path working, I connected all five fingers. Open palm, fist, and pointing worked; pinch and peace were approximate. I checked tracking loss and added the useful diagnostics to the combined demo: landmarks, finger bars, confidence, FPS, and tracking-loss messages. This gave me a working fixed-base hand demo, but the hand still could not move over to an object.</p>
+
+          <h3 id="base-control-debugging">Moving the whole hand was a separate problem</h3>
+          <p class="checkpoint">Checkpoint 1.13, initial attempts</p>
+          <p>Adding base translation and wrist rotation introduced problems that finger-only teleoperation had not exposed. The live app sometimes stopped on a high-velocity simulation guard, and the robot's orientation looked under-rotated. I tried rate-limiting the base target, stronger smoothing, and an orientation offset.</p>
+          <p>Further trials behaved better with my right hand than my left. Making a fist or rotating my wrist could also push the simulated base down or sideways into a workspace boundary. I tried a wrist-based translation anchor, mirrored the left-hand orientation into the right-hand model's convention, and reset smoothing and calibration state after tracking loss. These changes addressed parts of the behavior, but the combined mapping was still awkward: one axis barely moved, height kept clamping near the floor, and orientation was noisy.</p>
+          <p>I split the problem back into smaller tests. Translation would be calibrated from the image, depth would use hand scale, and rotation would remain disabled until those controls worked.</p>
+
+          <h3 id="calibrated-pose">Calibrating translation, depth, and rotation one at a time</h3>
+          <p class="checkpoint">Checkpoints 1.13A–1.13D</p>
+          <p>For translation, pressing <code>c</code> captures a comfortable neutral hand pose. Palm-center displacement in the image then maps to robot lateral movement and height. This was easier to inspect than a combined position/orientation mapping, and it kept the hand inside configured workspace limits.</p>
+          <p>For depth, I used apparent hand size as a monocular proxy: moving closer to the camera makes the hand larger, moving away makes it smaller. Calibration stores the neutral scale; the change drives bounded in/out motion. Smoothing and a deadband stop small scale fluctuations from moving the hand continually. This is a relative depth control, not metric 3D reconstruction.</p>
+          <p>Rotation also became relative to calibration. I stored the human palm orientation and robot orientation together, then applied the change from that reference. I tested roll alone before enabling pitch and yaw, with configurable axis signs, remapping, smoothing, and rate limits. The initial 45-degree limits were too restrictive for approach poses, so the final pass widened roll/yaw to 120 degrees and pitch to 110 degrees.</p>
+          <p>By the end of phase 1, translation, depth, wrist rotation, and fingers worked together in the live demo. Depth was still approximate, orientation still depended on camera viewpoint, and the thumb was less expressive than the other fingers. The next step was to record this behavior and see whether it survived replay.</p>
+          <a class="permalink" href="#hand-control">Link to phase 1</a>
+        </article>
+
+        <article class="journal-entry" id="demonstration-data" aria-labelledby="data-title">
+          <header>
+            <p class="eyebrow">Phase 2 · June–September 2026</p>
+            <h2 id="data-title">Recording demonstrations—and getting them to replay</h2>
+          </header>
+          <p>A live demo disappears when the window closes. To use it for learning, I needed to save enough information to reconstruct both the commands and the task. Phase 2 started with recording free-space gestures, then introduced reach, button press, and cube push one at a time. Cube push took considerably more debugging than the checklist initially suggested.</p>
+
+          <h3 id="episode-format">Deciding what an episode contains</h3>
+          <p class="checkpoint">Checkpoints 2.0–2.3</p>
+          <p>I first outlined resettable tasks with explicit targets and success conditions. The episode format then recorded the full phase 1 action: three base-position values, a four-value orientation quaternion, and the finger/wrist actuator targets. It also saved robot positions and velocities, landmarks and extracted features, tracking quality, timestamps, and the configuration used for that run. Object and task states were added when a task needed them.</p>
+          <p>The recorder writes metadata and NumPy arrays with matching time dimensions. Validation checks shapes, missing fields, finite values, and timestamp order. A runbook defined how to name attempts and inspect them. Replay loads the saved scene and applies the recorded actions, with headless and viewer modes and adjustable playback speed.</p>
+          <p>Later I made the observation layouts executable: each field declares its array, columns or named joints, shape, units, and coordinate frame. That lets the loader reconstruct a field by name. Existing gesture recordings kept an explicit compatibility path rather than being silently reinterpreted under a new layout.</p>
+
+          <h3 id="gesture-recordings">The first recordings: calibration, pinch, and shutdown</h3>
+          <p class="checkpoint">Checkpoints 2.4–2.4C</p>
+          <p>The first dataset contained open palm, fist, point, pinch, peace sign, and wave. Recording was changed to wait until <code>c</code> successfully calibrated the hand, so setup motion was not saved as part of the intended gesture. Static poses were held for roughly three to five seconds; wave was the moving example.</p>
+          <p>Pinch exposed another mismatch: the index could curl while the thumb stayed open. I added a pinch overlay to the retargeting path and a “Pinch close” bar so I could tell whether the app actually saw thumb–index closure. The goal at this stage was a recognizable approximate pinch, not exact fingertip contact.</p>
+          <p>I also checked that <code>q</code> closed both windows and returned the terminal prompt. Printing “Saved demo” was not sufficient if the macOS viewer kept the process alive. By the July 18 audit there were 60 valid recordings, ten per gesture, and all 60 completed headless replay. One pinch clip included extra open-hand transition footage but retained an uninterrupted 3.97-second pinch, which I documented when keeping it.</p>
+          <p>Before collecting object tasks, I added the clean-environment setup, dependencies, linting, and generated-file exclusions. The raw local recordings stayed intact while the repository became reproducible from a fresh checkout.</p>
+
+          <h3 id="reach-data">Reach: separating task success from data quality</h3>
+          <p class="checkpoint">Checkpoints 2.5–2.7C</p>
+          <p>I built a task board with a deterministic reset and selectable reach targets, then recorded a five-demo pilot over at least three targets. Each episode saved the selected target and initial state. I added success recomputation from saved state so I could compare the operator label with what the trajectory actually did.</p>
+          <p>Next came quality filters for tracking loss, low confidence, feature jitter, action jerk, workspace saturation, joint-limit hits, and task failure. These answer a different question from “did it reach the target?” A successful attempt can still contain poor control data. Reports kept both the result and the rejection reason without changing the raw recording.</p>
+          <p>The balanced collection helper chose among targets with the fewest clean successes. The final reach set had 76 raw episodes: 69 recomputed successes, but only 55 quality-passed successes. Those 55 were split 18 left, 18 center, and 19 right. Two interpolated target positions were reserved for later rollout evaluation before training began.</p>
+
+          <h3 id="button-data">Button press: checking the intended button</h3>
+          <p class="checkpoint">Checkpoints 2.7D–2.7E</p>
+          <p>The board gained three passive spring-return buttons with slide joints. A task could specify the button and desired press depth. The first five demonstrations covered all three buttons and depths from 10 to 14 mm, then went through the same replay, label-recomputation, and quality pipeline.</p>
+          <p>To make selection unambiguous, the target button was bright green and the others dark gray. Unrelated reach fixtures were hidden and non-colliding during button recording and replay. An audit checked that the selected button was the primary press, rather than counting any nearby contact as success. All five pilot recordings passed.</p>
+
+          <h3 id="push-pilot">Cube push: responsive commands, sluggish physics</h3>
+          <p class="checkpoint">Checkpoints 2.7F–2.7G · July 19 onward</p>
+          <p>The push task used a free-moving cube, named start lanes and targets, and a success check based on planar distance and dwell time. The first usable scene needed the wall and unrelated fixtures hidden, and the physical hand and its commanded base target reset together behind the cube.</p>
+          <p>The first replacement trial had excellent tracking, but only 5.6 cm of forward command range over 31.7 seconds and pushed away from the target. I adjusted translation/depth gains, smoothing, deadband, and the per-frame movement cap. A later trial still felt delayed even though the command itself changed promptly.</p>
+          <p>The recorded state exposed the cause: the physical base trailed its target by 3.3 cm on average and 7.4 cm at the 95th percentile. The loop advanced MuJoCo by two 2 ms steps for each camera frame, or 4 ms of simulated time per roughly 33 ms of real time. I changed cube recording to at least 17 simulation steps per frame at 30 Hz and saved that cadence in the metadata. A headless regression reduced the final following error from about 2.5 cm to 2 mm.</p>
+
+          <h3 id="push-orientation">Fixing the palm pose, then finding a preset that undid it</h3>
+          <p class="checkpoint">Further 2.7G trials</p>
+          <p>After the timing fix, the hand responded, but the cube moved 27 cm and rose more than 10 cm. That was a scoop, not the delayed response I had been diagnosing. My real palm was upright while the simulated palm was horizontal, making height and push direction hard to interpret.</p>
+          <p>I tried an upright reset and damped the motion. The next trial had only 2.3 mm mean following error, but the cube moved backward. The robot fingers pointed along the push axis when the palm normal needed to. I changed the reset to a camera-facing, fingers-up palm and mapped depth along that palm normal.</p>
+          <p>Another recording exposed two orientation bugs. The reset quaternion actually presented the back of the hand to the cube, and the general full-control preset re-enabled live wrist orientation after the task had disabled it. The hand rotated out of view after about 1.2 seconds. I corrected the reset and forced push-task orientation off after applying the preset, then saved the effective enable flags so replay could use what had really run.</p>
+
+          <h3 id="push-constraints">Reducing push to a motion I could collect reliably</h3>
+          <p class="checkpoint">Further 2.7G trials</p>
+          <p>A fixed commanded orientation still did not stop physical deflection. The visible forearm and wrist crossed the tabletop at reset, and camera up/down motion spanned 15 cm of commanded height. Table contact could knock the hand sideways despite the fixed target quaternion. That trial had 3.6 cm mean following error and 11.6 cm at the 95th percentile.</p>
+          <p>I hid and disabled the below-table support geometry, fixed height at a stable pushing plane, and narrowed the forward and lateral workspace. Named start/target lanes made the task a straight planar push. The next clean reference ended 2.72 cm from the target with little cube lift, but it had no operator success label: push had been omitted from the shared label prompt. I fixed the prompt before counting accepted pilots.</p>
+          <p>Two later attempts reached the target and agreed with their operator labels but failed the workspace quality gate. Lateral commands spent 32.7%, then 12.8%, of their frames at the boundary; the allowed maximum was 10%. Centering the lateral workspace helped but did not fully solve it. Since each start and target were already aligned, I fixed lateral position too. Only bounded forward/backward input remained active during the push.</p>
+          <p>This deliberately reduced what the demonstration represented. The final pilot showed controlled straight pushes in three lanes, with height, orientation, and lateral position fixed. It did not show general manipulation of a cube.</p>
+
+          <h3 id="replay-cadence">Five successful pushes still needed coverage—and a replay fix</h3>
+          <p class="checkpoint">Completion of 2.7G · September 2</p>
+          <p>The first batch of five clean successes all used the left target. I kept three and replaced the redundant examples with center and right recordings. The final five had full hand detection, roughly 1.3–2.3 mm mean base-following error, less than 1 mm maximum cube lift, and final distances around 2–3 cm.</p>
+          <p>Verification then caught a separate replay bug: the replay command still defaulted to one physics step per action, even though these recordings used 17. I made replay read the saved cadence, with an explicit override and a one-step fallback for legacy data. Only after all five replays showed the correct start, target, and final behavior did the pilot close.</p>
+
+          <h3 id="dataset-scale">Scaling the narrow tasks and exporting their interfaces</h3>
+          <p class="checkpoint">Checkpoints 2.7H–2.7J</p>
+          <p>The button selector balanced collection across nine button/depth combinations and produced 55 clean episodes. Push collection reached 101 clean episodes, distributed 33/34/34 across the left, center, and right lanes. Each retained episode had replay, recomputed labels, and quality checks. Interpolated button depths and cube start/target conditions stayed held out for learning evaluation.</p>
+          <p>I also exported preliminary skill metadata: parameters, units, frames, preconditions, success/failure conditions, and timeouts. These were interface stubs with no learned policy attached. They gave later training and orchestration a defined task to implement.</p>
+
+          <h3 id="retargeting-comparison">Did a more complex retargeter help?</h3>
+          <p class="checkpoint">Checkpoints 2.8–2.10B</p>
+          <p>I added two alternatives to the original curl/bend mapping. The fingertip baseline transforms landmarks into a palm-local frame, normalizes by palm width, and uses a simple geometric mapping to bounded robot targets. The optimization version solves for five normalized finger controls, minimizing fingertip error with actuator-limit and previous-solution smoothness terms. It uses SciPy L-BFGS-B when available and a projected-gradient fallback otherwise.</p>
+          <p>I first benchmarked ten push episodes, then expanded to all 101 episodes and 7,176 frames. Each method received the same saved human inputs and base actions, and I replayed its substituted finger commands. The full comparison added 2,000 episode-bootstrap resamples and measurements of fingertip distance and contact in MuJoCo.</p>
+          <p>Curl and optimization both achieved 87.1% replay success; the fingertip baseline achieved 83.2%, with overlapping confidence intervals. Optimization lowered the surrogate fingertip error but did not beat curl's task success, speed, or smoothness. The original base trajectories had been collected under curl control, so this was a comparison on those trajectories, not independent live collection under each retargeter.</p>
+
+          <h3 id="dataset-freeze">Freezing the inputs to the first learning experiment</h3>
+          <p class="checkpoint">Checkpoint 2.11</p>
+          <p>I packaged the historical data and reports with an immutable manifest and checksums. The learning sets were now 55 reach, 55 button, and 101 push successes. For reach, I froze an 80/20 goal-stratified split by whole episode, training-only normalization, and 35 rollout scenarios: 21 using training targets and 14 using held-out targets, with fixed one-centimeter start perturbations.</p>
+          <p>The old recordings did not contain genuine session IDs, so they could not support a cross-session claim. They were still enough to ask the next question: could a small model learn useful behavior from these saved states and commands?</p>
+          <a class="permalink" href="#demonstration-data">Link to phase 2</a>
+        </article>
+
+        <article class="journal-entry" id="learning-loop" aria-labelledby="learning-title">
+          <header>
+            <p class="eyebrow">Phase 3 · September 3, 2026</p>
+            <h2 id="learning-title">Training the first policies and finding out why they failed</h2>
+          </header>
+          <p>Phase 2's checks showed that demonstrations could be recorded, validated, and replayed. They did not show that a learned policy could reproduce them. I kept this phase small: simulator state as input, a goal-conditioned MLP, and behavior cloning, which trains the model to predict the demonstrated action.</p>
+
+          <h3 id="first-training-loop">Loading data, defining the model, and training on CPU</h3>
+          <p class="checkpoint">Checkpoints 3.0–3.3</p>
+          <p>I separated this feasibility study from the larger dataset and skill-training phases. The loader resolved observations through the saved layouts and kept complete episodes together. The frozen reach split contained 43 training and 12 validation episodes; normalization used only the training portion.</p>
+          <p>The model took robot/task state and the typed goal and predicted the full 27-value action: base position, quaternion orientation, and 20 actuator targets. I used a small MLP with two 128-unit hidden layers. Before running the real experiment, I checked output shapes, save/load consistency, and whether the training loop could overfit a tiny dataset.</p>
+          <p>The real reach run trained for 100 epochs on CPU. I saved the loss history, optimizer and model state, seed, normalization statistics, and data/configuration digests. That made it possible to repeat the training run and verify which checkpoint an evaluation actually used.</p>
+
+          <h3 id="first-rollouts">The first rollout was partly successful and still failed the test</h3>
+          <p class="checkpoint">Checkpoint 3.4</p>
+          <p>A rollout closes the loop: the model predicts an action, MuJoCo executes it, and the resulting state becomes the next input. That is different from predicting actions on a saved trajectory where the next state is already supplied.</p>
+          <p>The first reach checkpoint completed 17 of 35 frozen scenarios. Success was 38.1% on training targets and 64.3% on held-out targets. The other 18 runs ended at joint or workspace limits, so the policy did not pass the predefined acceptance criteria. I kept the failed trajectories and their terminal reasons alongside the successful ones.</p>
+
+          <h3 id="checkpoint-repair">I had evaluated the wrong checkpoint</h3>
+          <p class="checkpoint">Checkpoints 3.5A–3.5B</p>
+          <p>The first evaluator used epoch 100, even though validation loss had been lowest at epoch 15. I changed training to save separate last and best-validation checkpoints and select the earliest epoch in a tie. Then I repeated reach with the same dataset, split, seed, model, training budget, and rollout conditions.</p>
+          <p>The corrected selection made the rollout result worse: zero successes, with 20 workspace-limit and 15 joint-limit failures. Lower validation loss had not meant better closed-loop control. Repeated fixed-seed training reproduced the checkpoint hashes, so I preserved both evaluations rather than dismissing the difference as a new random run.</p>
+          <p>I also froze button and push rollout protocols before training those tasks. The button model selected epoch 17 and push selected epoch 97. Both failed every rollout at the first control step because of joint-limit violations.</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Phase 3 rollout results">
+            <table>
+              <caption>Frozen rollouts. Training-target and held-out-target success are reported separately.</caption>
+              <thead><tr><th scope="col">Policy</th><th scope="col">Runs</th><th scope="col">Training targets</th><th scope="col">Held-out targets</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Reach, final epoch</th><td>35</td><td>38.1%</td><td>64.3%</td></tr>
+                <tr><th scope="row">Reach, best validation</th><td>35</td><td>0%</td><td>0%</td></tr>
+                <tr><th scope="row">Button, best validation</th><td>84</td><td>0%</td><td>0%</td></tr>
+                <tr><th scope="row">Push, best validation</th><td>30</td><td>0%</td><td>0%</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 id="action-diagnostics">Checking the action representation before changing the model</h3>
+          <p class="checkpoint">Checkpoint 3.6</p>
+          <p>I compared full-action, base-only, finger-only, and fixed-goal variants under the same splits, seeds, model size, and evaluation conditions. Any action fields omitted by an experiment held their prior applied values. This let me examine the effect of controlling different parts of the hand without changing the stored demonstrations.</p>
+          <p>Reach and push still had no successful diagnostic variant. Button improved to 33.3% success with base-only control, while a fixed-training-mean goal variant reached 19.0%. Both still had safety violations. Action grouping clearly affected the outcome, but none of those changes produced a qualified policy.</p>
+          <p>I also tested whether quality filtering had removed useful reach examples by expanding from 55 clean successes to all 69 recomputed successes. It did not rescue the result. Button and push had no equivalent broader-success set, so there was no matching comparison to run for those tasks.</p>
+
+          <h3 id="temporal-decision">Why I did not add a GRU yet</h3>
+          <p class="checkpoint">Checkpoint 3.7</p>
+          <p>The plan allowed a short-history model if the results showed that the current state was ambiguous or that errors accumulated over time. But the full button and push policies stopped after one control step. Those runs showed an immediate control/safety problem; they did not establish a need for memory.</p>
+          <p>I left the GRU unimplemented. That did not prove a temporal model could never help. It meant I had not measured the failure that would justify adding it. Missing recovery examples and compounding error remained possible explanations to investigate, rather than conclusions drawn from these runs.</p>
+
+          <h3 id="feasibility-conclusion">What carried forward into phase 4</h3>
+          <p class="checkpoint">Checkpoint 3.8</p>
+          <p>The loading, training, checkpointing, and frozen-evaluation loop worked reproducibly. None of the tested full-action policies was ready to use as a skill. The next phase needed a better-defined control interface and broader task data: real session ownership, explicit task phases, prior applied actions, safety records, and object/goal variation.</p>
+          <p>That still left a practical question unanswered: how would I collect those more complicated demonstrations? Phase 4 initially tried extending the live hand-control approach. The contact-task pilot was where that assumption broke down.</p>
+          <a class="permalink" href="#learning-loop">Link to phase 3</a>
+        </article>
+
+        <article class="journal-entry" id="pick-place-anchor" aria-labelledby="anchor-title">
+          <header>
+            <p class="eyebrow">Phase 4 · September 3–8, 2026 · Through checkpoint 4.5A</p>
+            <h2 id="anchor-title">A workcell, a failed control pilot, and scripted experts</h2>
+          </header>
+          <p>The earlier tasks each had a narrow setup. For reusable skills, I needed a common scene where an object's state at the end of one task could become the starting point for another. I specified a tabletop workcell with blocks, cylinders, and pucks, two return bins, an inspection pad, two setup slots, and a Start button.</p>
+
+          <h3 id="workcell-scene">Defining the scene—and fixing what the viewer revealed</h3>
+          <p class="checkpoint">Checkpoints 4.0–4.1</p>
+          <p>The first plan defined five skills: reach, pick, place-held-object, push, and press. Each got initial-state requirements and a measurable end condition. The world-state format included named entities, pose and velocity, support/contact/held relations, timestamps, and units. I also assigned collection conditions to training, validation, or test sessions before recording them.</p>
+          <p>The scene passed automated checks, but the first interactive viewer was locked to a fixed camera and exited after 1,200 steps. I changed it to a movable overview with reset, seed, pause, and label controls. Colors alone were ambiguous; after adding labels, I found MuJoCo hid the site group containing their anchors by default. Moving the workcell labels into a visible group fixed that.</p>
+          <p>The return bins then appeared left/right reversed, and randomized objects could obscure the setup slots. Camera adjustments alone did not fix the bin names because the target coordinates themselves encoded the opposite ordering. An initial screen-space check also had its horizontal-vector sign reversed. I corrected target coordinates, scene bodies, and the check together. Deterministic spawn lanes and clearance tests kept objects off the slot markers. The resulting viewer passed manual review on September 3.</p>
+
+          <h3 id="workcell-recording">Recording phases and the actions that were actually applied</h3>
+          <p class="checkpoint">Checkpoint 4.2</p>
+          <p>The new format distinguishes requested, commanded, and applied actions, plus prior actions and per-field clipping or rejection reasons. That matters when a controller asks for one thing and a safety limit changes it. A learner should not treat the original request as though the robot executed it unchanged.</p>
+          <p>I added session manifests, unique episode allocation, and append-only writes. Task phases such as approach, acquire, lift, transport, release, and settle can be computed from current and previous state, without looking at future frames. A complete pick/place recording can then provide compatible reach, pick, and place segments while still counting as one recorded episode.</p>
+
+          <h3 id="workcell-teleop">Trying to collect the new tasks with the old controls</h3>
+          <p class="checkpoint">The original 4.3 pilot · September 4</p>
+          <p>The first reach attempt put the forearm root on the board as if it were the palm's control point. I corrected the planning point, reset the physical hand at the commanded pose, and kept the forearm outside the work area. The next attempt showed that imitating robot orientation with my real hand was still awkward, so I locked robot orientation and used an upright, webcam-facing palm as a translation control.</p>
+          <p>A later reach entered the target tolerance for 36 frames but moved two neighboring objects by about 7 cm. The approach marker was too low. Raising it to a collision-free pre-grasp pose addressed that. Then the new recorder repeated a timing mistake from phase 2: one 2 ms step per camera frame made motion roughly 17 times slower than real time. I restored the 17-step cadence.</p>
+          <p>Absolute image-to-position mapping still required moving near the edge of the camera frame, and those attempts disturbed the scene. I replaced gain tuning with centered nonlinear Cartesian rate control, where displacement from neutral controls motion rate, and added a high transit path with descent allowed near the target. Separate visual cues showed the selected object and the desired palm position.</p>
+          <p>Four retained trials then tested reach, pick/place, push, and press. Reach worked, ending about 1.62 cm from its target with roughly 2.1 mm scene disturbance. Pick/place moved the intended block and a neighbor without grasping. Push did not move its selected block. Button press never reached a usable approach range and recorded zero depth. I judged only reach usable.</p>
+          <p>That was the point where I changed the collection strategy. The phase 1 camera control could make a good teleoperation demo, and phase 2 could collect heavily constrained pushes, but it was not producing the contact demonstrations this workcell needed. I kept those experiments as history and moved active collection to deterministic controllers using simulator state.</p>
+
+          <h3 id="scripted-reach-press">Scripted reach first, then button press</h3>
+          <p class="checkpoint">Checkpoints 4.3A–4.3B</p>
+          <p>I gave each scripted expert a reset/step interface and reused the existing recorder. Reach plans around the palm/grasp site: rise to a safe height, travel horizontally, enter a protected approach corridor, then descend. Candidate motion is executed in a scratch copy of MuJoCo state first to check workspace limits, joint limits, collisions, and neighbor movement.</p>
+          <p>Five randomized reaches passed, but the first visible review was misleadingly choppy because playback was set to 0.1×—about three displayed poses per second from a 30 Hz recording. The target cage also started at the object's center instead of enclosing it. I corrected the cage and verified the replay.</p>
+          <p>The button expert kept posture and orientation fixed, moved along the button normal, held the required depth, and retracted until release. The button needed to be mounted inside the usable workspace, with recovery travel beyond the largest task depth. Five randomized resets then recorded and replayed successfully without unintended contact or safety interventions.</p>
+
+          <h3 id="scripted-push-grasp">Push and grasp needed their own physical checks</h3>
+          <p class="checkpoint">Checkpoints 4.3C–4.3D</p>
+          <p>Push derives its forward axis from the object's start and goal. After approaching from behind, it fixes height, orientation, and fingers and moves along that axis. A cuboid push needed remediation so that sliding, not tipping into the target, counted as success. I required table support, no more than ten degrees of tilt, and a stable result after retraction instead of latching a momentary target hit.</p>
+          <p>For grasp-and-lift, I used separate object-relative templates for cuboids, cylinders, and flat pucks. Each specifies a grasp offset, wrist pose, open/closed hand targets, and a scalar grasp-synergy control. To isolate the grasp physics from the clutter problem the pilot had already shown, standalone trials kept the selected object in place and parked non-target objects on the lower floor.</p>
+          <p>Finishing the controller's “lift” phase was not enough to call it a pick. The object had to leave table support, rise at least 4 cm, be held through contact with at least two hand bodies, and remain below the speed threshold for ten samples. Three seeds per object family passed. In visible review, though, the cuboid rotated substantially while held. That did not violate the initial lift metric, but it would matter when placing the object with a useful orientation.</p>
+
+          <h3 id="scripted-placement">The grasp that lifted the block did not place it well</h3>
+          <p class="checkpoint">Checkpoints 4.3E–4.3F</p>
+          <p>The first complete sequence added transport, descent, release, settling, and retraction. Visual review rejected the original top-down grasp because the cuboid yawed about 24 degrees in the hand. I changed the shared grasp to a side-on wrist pose and added an explicit rotation-only orientation hold during lift and transport. Translation and release remained governed by the simulation.</p>
+          <p>This is a simplifying constraint in the expert, not learned orientation control. Round objects also needed task-local contact and rolling-resistance settings to grasp and settle consistently. Those changes applied to pick and pick/place so they did not silently alter the already-tested push behavior.</p>
+          <p>Ten complete sequences across the three object families then recorded, recomputed, and replayed successfully. I followed that with a shared audit over two resets each for reach, button, push, grasp-and-lift, and complete pick/place. All ten passed, and I reviewed one visible replay per skill before moving on.</p>
+
+          <h3 id="button-probe">A smaller learned interface—and another joint-limit bug</h3>
+          <p class="checkpoint">Checkpoint 4.3G · September 5</p>
+          <p>Before collecting a large dataset, I wanted to check whether this formulation was learnable. I collected 20 scripted button episodes with a 14/3/3 whole-session split and trained one MLP with two 64-unit tanh layers. It observed task-relative geometry, button state, velocity, phase, and the previous applied delta, and predicted only task-frame <code>dx, dy, dz</code>. A deterministic adapter supplied the fixed posture and orientation.</p>
+          <p>The first varied-reset evaluation failed ten of twenty rollouts. Contact pushed the middle finger joint <code>rh_MFJ1</code> past its limit. Giving the fixed posture a small interior margin removed that failure, then three right-offset cases exposed the same problem on <code>rh_FFJ1</code>. A one-percent index margin resolved those cases too.</p>
+          <p>The resulting pilot completed 20/20 held-out press-and-release rollouts without safety or contact violations. The dataset stayed at 20 episodes and the model recipe stayed the same; the fixes were in the control posture. The held-out trials did inform those repairs, so this is development-pilot evidence. Full skill qualification is still later work.</p>
+
+          <h3 id="push-probe">The push model needed the expert to remain in control</h3>
+          <p class="checkpoint">Checkpoint 4.3H</p>
+          <p>I reused the small-model convention and 20-episode split for push. Predicting the entire motion delta failed 0/20: approach errors accumulated until the hand reached a workspace boundary. I kept the scripted controller responsible for the nominal path and contact behavior and trained the model on a small tracking residual instead, bounded to 1 mm and 0.5 mm along the contact axis.</p>
+          <p>The combined controller completed 20/20 held-out cuboid and puck resets. That result shows the residual interface can run successfully alongside the expert. It does not show that the residual improves on the expert alone; that needs a zero-residual comparison.</p>
+          <p>Copied-state checks also showed that some proposed right-bin push routes crossed the fixture region, and a puck approach waypoint left the workspace. I removed those unsupported conditions from this controller's collection scope rather than treating them as collectable because they appeared in the original plan.</p>
+
+          <h3 id="core-collection">Freezing coverage and collecting the core tasks</h3>
+          <p class="checkpoint">Checkpoints 4.3I–4.4 · September 5–6</p>
+          <p>The initial plan had estimated 250–350 episodes. After the pilots, I froze a smaller 114-episode integration matrix, with 74 rows describing skill/object/goal or failure conditions and their split ownership. The push subset retained twelve qualified conditions and documented the excluded ones. The source mix was revised again before core collection so all required nominal demonstrations came from scripted experts.</p>
+          <p>The first completed haul contained 60 required episodes: twenty reach, twenty push, and twenty press, covering all 32 core cells. Training and validation data were frozen before the fourteen test-owned episodes were recorded. Four push test cells used seeds already qualified in the earlier pilot because the generic seed sequence failed the copied-state workspace check. That restriction remains part of what this collection covers.</p>
+
+          <h3 id="pick-place-collection">The pick/place anchor uncovered geometry and replay issues again</h3>
+          <p class="checkpoint">Checkpoint 4.5A · September 8</p>
+          <p>The next haul targeted 42 complete pick/place episodes across thirty split-owned cells. The first test audit accepted only four of eighteen assignments. The earlier templates did not transfer cleanly to the larger cuboid, taller cylinder, and heavier puck.</p>
+          <p>I introduced object-specific grasp points and placement-center corrections in a new version. Return-bin walls became visual guides, and validation, recording, and replay were made to use the same internal orientation-hold cadence. The earlier failed attempts remained preserved; the corrected runs did not replace their history.</p>
+          <p>The revised anchor passed all 42 episodes. Each could be replayed, have its task result recomputed, and yield compatible reach, pick, and place segments. I reviewed six stratified replays covering every object family and target type. The frames below come from one of those accepted scripted episodes.</p>
+          <div class="replay-gallery" role="group" aria-label="Three frames from a scripted pick/place replay">
+            <figure><a href="images/approach.png"><img src="images/approach.png" width="1200" height="800" loading="lazy" alt="Shadow Hand above the workcell, with the red block in its marked source position." /></a><figcaption>Approach · 0.03 s</figcaption></figure>
+            <figure><a href="images/lift.png"><img src="images/lift.png" width="1200" height="800" loading="lazy" alt="Shadow Hand grasping and lifting the red block above its source position." /></a><figcaption>Lift · 5.30 s</figcaption></figure>
+            <figure><a href="images/placed.png"><img src="images/placed.png" width="1200" height="800" loading="lazy" alt="Red block at the left return-bin target, with the Shadow Hand open after release." /></a><figcaption>Placed and released · 10.57 s</figcaption></figure>
+          </div>
+          <p class="figure-note">Scripted-expert replay with the orientation hold and visual-only return-bin walls described above. Select a frame to view it full size.</p>
+
+          <h3 id="next-collection">What I still need to do in this phase</h3>
+          <p class="checkpoint">Planned checkpoints 4.5B–4.9</p>
+          <p>The anchor verifies the collection path and coverage, but it is too narrow to establish that the data is sufficient for learning. The next plan expands each nominal cell to at least sixteen independently seeded accepted episodes: 992 nominal episodes in total, including the existing anchors. A further 120 failure/correction episodes would bring the planned minimum to 1,112.</p>
+          <p>I plan to compare nested training subsets of four, eight, and sixteen episodes per cell using the same recipe and validation rollouts. That should tell me whether performance is still improving with more data and where coverage remains weak. Test data will not decide the collection size.</p>
+          <p>The remaining checkpoints add separately labeled failures and scripted corrections, aligned rendered images with object labels and poses, split and coverage audits, and a versioned release. Full skill training and visual execution follow that release. The LLM orchestrator still depends on those skills being reliable enough to compose.</p>
+          <!-- Append dated checkpoint updates here as phase 4 progresses. Keep earlier results and corrections visible. -->
+          <a class="permalink" href="#pick-place-anchor">Link to phase 4</a>
+        </article>
+        <!-- Append future phases here in chronological order, with a matching journal-index link. -->
+      </main>
+      <footer><a href="/#projects">← Back to experiences &amp; projects</a><p>Mukund Shankar · DexVision development journal</p></footer>
+    </div>
+  </body>
+</html>
