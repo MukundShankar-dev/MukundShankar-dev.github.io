@@ -12,15 +12,15 @@ import tool_call_report from './files/tool_call_report.pdf';
 
 function App() {
     return (
-        <div className="container">
+        <main className="container" id="main-content">
             <div className="personal-info">
                 <div className="personal-text">
                     <h1>Mukund Shankar</h1>
                     <p>
-                       I'm a graduate student in Computer Science at the University of Maryland. My work focuses on building reliable AI systems from confidence estimation in language models to production RAG pipelines and multimodal transformers. I'm particularly interested in preventing model hallucinations, creating robust evaluation frameworks, and deploying ML systems that work reliably at scale. 
+                       I'm a Computer Science master's student at the University of Maryland, graduating in December 2026. I build and evaluate machine learning systems, from language-model confidence probes and production RAG pipelines to robot learning with DexVision.
                     </p>
                     <div className="links">
-                        <a href="mailto:smukund@gmail.com" target="_blank" rel="noopener noreferrer">Email</a>
+                        <a href="mailto:smukund23@gmail.com">Email</a>
                         <a href={resume} target="_blank" rel="noopener noreferrer">Resume</a>
                         <a href="https://www.linkedin.com/in/mukundsh" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                         <a href="https://github.com/mukundshankar-dev" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -31,39 +31,66 @@ function App() {
                 </div>
             </div>
 
-            <div className="experiences">
+            <div className="experiences" id="projects">
                 <h2>Experiences/Projects</h2>
                 <div className="experience-item">
-                    <img src={git} alt="NLP Report" />
+                    <img src={git} alt="" />
                     <div>
-                        <h3>Diagnozing Tool-Call Decision Making in Small Language Models</h3>
-                        <span className="date">February 2026 - May 2026</span>
-                        Developed a tool-call decision framework for small LMs that benchmarks prompting, SFT, DPO, and Constitutional AI-style supervision on When2Call. Improved decision accuracy over zero-shot baselines with SFT and CAI-DPO, and trained linear probes showing correct tool-use decisions are often recoverable from hidden states even when final outputs are incorrect.
-                        <br></br>
-                        <a href={tool_call_report} target="_blank" rel="noopener noreferrer">Read the full report here</a>
-                        <br></br>
-                        <a href="https://github.com/anirudhporuri/tool-call-decision-making/" target="_blank" rel="noopener noreferrer"> View the code repository here</a>
+                        <h3><a href="/projects/dexvision/">DexVision</a></h3>
+                        <span className="date">June 2026 - Present</span>
+                        <ul className="experience-bullets">
+                            <li>Building toward an LLM-orchestrated robot that turns requests like “put this part on the inspection pad and press Start” into sequences of reusable manipulation skills.</li>
+                            <li>Developing reach, pick, place, push, and button-press skills for a simulated Shadow Hand in MuJoCo, with the goal of reusing them across workspace clearing, inspection, and setup tasks.</li>
+                            <li>Building a diverse demonstration dataset and PyTorch imitation-learning pipeline to train and evaluate these skills, then connect visual perception and an LLM planner through a supervised execution interface.</li>
+                        </ul>
+                        <div className="project-links">
+                            <a href="/projects/dexvision/">Read the project journal →</a>
+                            <a href="https://github.com/MukundShankar-dev/DexVision" target="_blank" rel="noopener noreferrer">Code on GitHub</a>
+                        </div>
                     </div>
                 </div>
                 <div className="experience-item">
-                    <img src={git} alt="NLP Report" />
+                    <img src={git} alt="" />
+                    <div>
+                        <h3>Diagnosing Tool-Call Decision Making in Small Language Models</h3>
+                        <span className="date">February 2026 - May 2026</span>
+                        <ul className="experience-bullets">
+                            <li>Investigated when small language models should call a tool, request more information, or abstain, benchmarking prompting, SFT, DPO, and Constitutional AI-style supervision on When2Call.</li>
+                            <li>Improved tool-call decision accuracy over zero-shot baselines with SFT and CAI-DPO.</li>
+                            <li>Trained linear probes showing that correct tool-use decisions are often recoverable from hidden states even when final outputs are incorrect.</li>
+                        </ul>
+                        <div className="project-links">
+                            <a href={tool_call_report} target="_blank" rel="noopener noreferrer">Read the report</a>
+                            <a href="https://github.com/anirudhporuri/tool-call-decision-making/" target="_blank" rel="noopener noreferrer">Code on GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <div className="experience-item">
+                    <img src={git} alt="" />
                     <div>
                         <h3>Confidence Probes for Language Models</h3>
                         <span className="date">September 2025 - December 2025</span>
-                        Developed lightweight MLP classifiers that use internal model signals (hidden states, entropy, layer trajectories) to predict when LLMs will answer correctly. Trained probes achieving 90% accuracy and 0.97 AUC-ROC across 400K+ examples spanning TriviaQA, HotpotQA, SQuAD v2, GSM8K, and MMLU. Evaluated cross-dataset and cross-model transfer, analyzing threshold brittleness and task mismatch as key failure modes under distribution shift.
-                        <br></br>
-                        <a href={nlp_report} target="_blank" rel="noopener noreferrer">Read the full report here</a>
-                        <br></br>
-                        <a href="https://github.com/MukundShankar-dev/Confidence-Probes-For-LMs" target="_blank" rel="noopener noreferrer"> View the code repository here</a>
+                        <ul className="experience-bullets">
+                            <li>Developed lightweight MLP classifiers using hidden states, entropy, and layer trajectories to predict when language models will answer correctly.</li>
+                            <li>Trained probes achieving 90% accuracy and 0.97 AUC-ROC across 424K examples spanning TriviaQA, HotpotQA, SQuAD v2, GSM8K, and MMLU.</li>
+                            <li>Evaluated cross-dataset and cross-model transfer, identifying threshold brittleness and task mismatch as key failure modes under distribution shift.</li>
+                        </ul>
+                        <div className="project-links">
+                            <a href={nlp_report} target="_blank" rel="noopener noreferrer">Read the report</a>
+                            <a href="https://github.com/MukundShankar-dev/Confidence-Probes-For-LMs" target="_blank" rel="noopener noreferrer">Code on GitHub</a>
+                        </div>
                     </div>
                 </div>
                 <div className="experience-item">
                     <img src={juume} alt="JuumeAI" />
                     <div>
-                        <h3>JuumeAI</h3>
+                        <h3>Machine Learning Engineer Intern · JuumeAI</h3>
                         <span className="date">April 2025 - September 2025</span>
-                        Working as a Machine Learning Engineer at JuumeAI, designing and deploying production RAG systems on GCP. Developed end-to-end pipelines processing 10K+ documents with LLM-powered semantic chunking and automated ingestion. Built comprehensive evaluation framework using BERTScore, RAGAS, and Coverage metrics. Created versioned prompt repository to reduce hallucinations through retrieval-grounded validation. Optimized pipeline performance through autoscaling and multithreading, achieving 5x latency reduction and 17% BERTScore improvement over baseline.
-                        <br></br>
+                        <ul className="experience-bullets">
+                            <li>Built a PostgreSQL/pgvector RAG system for 10K+ documents, using LLM semantic chunking and automated ingestion to improve BERTScore by 17% over direct LLM baselines.</li>
+                            <li>Accelerated document indexing by 5× through multithreading and autoscaling on Google Cloud Run.</li>
+                            <li>Developed an evaluation framework using BERTScore, RAGAS, and coverage metrics to validate retrieval grounding and measure performance across pipeline stages.</li>
+                        </ul>
                         <a href="https://www.juume.ai/" target="_blank" rel="noopener noreferrer">More about JuumeAI</a>
                     </div>
                 </div>
@@ -72,9 +99,11 @@ function App() {
                     <div>
                         <h3>Undergraduate Researcher</h3>
                         <span className="date">July 2023 - November 2025</span>
-                        Working in <a href="https://www.cs.umd.edu/~abhinav/" target="_blank" rel="noopener noreferrer">Dr. Abhinav Shrivastava's</a> group, developing a model to well condition a latent space between text and human motion representations,
-                        training a model to be used for action classification. We are looking to submit this work for publication in Fall of 2024.
-                        Worked on image processing using Intel RealSense depth cameras.
+                        Worked in <a href="https://www.cs.umd.edu/~abhinav/" target="_blank" rel="noopener noreferrer">Dr. Abhinav Shrivastava's</a> group at the University of Maryland.
+                        <ul className="experience-bullets">
+                            <li>Developed a transformer-based model for retrieving SMPL skeletal human motions from text, achieving 90% R@1 on KIT-ML and HumanML3D.</li>
+                            <li>Extended motion/text retrieval to RGB videos using keypoint detection and SAM tracking, testing the end-to-end pipeline on 39,000 videos.</li>
+                        </ul>
                     </div>
                 </div>
                 <div className="experience-item">
@@ -83,7 +112,7 @@ function App() {
                         <h3>agora.</h3>
                         Developed an app which uses Natural Language Processing to generate curated daily meal plans based on text input from users.
                         <br></br>
-                        <a href="https://www.cs.umd.edu/article/2023/10/umd-undergrads-revolutionize-meal-planning-innovative-app" target="_blank">Ft. in UMD Newsletter</a>
+                        <a href="https://www.cs.umd.edu/article/2023/10/umd-undergrads-revolutionize-meal-planning-innovative-app" target="_blank" rel="noopener noreferrer">Ft. in UMD Newsletter</a>
                         <br></br>
                         <a href="https://master.d1frbpmrrocpzu.amplifyapp.com/" target="_blank" rel="noopener noreferrer">Website</a>
                         <br></br>
@@ -117,6 +146,14 @@ function App() {
             <div className="experiences">
                 <h2>Education</h2>
                 <div className="experience-item">
+                    <img src={umd} alt="" />
+                    <div>
+                        <h3>M.S. in Computer Science · University of Maryland</h3>
+                        <span className="date">Expected December 2026</span>
+                        Graduate work in natural language processing, language models, and machine learning systems.
+                    </div>
+                </div>
+                <div className="experience-item">
                     <img src={umd} alt="UMD" />
                     <div>
                         <h3>University of Maryland, College Park</h3>
@@ -128,9 +165,8 @@ function App() {
             </div>
 
             <div className="coursework">
-                <h1>M.S. Computer Science</h1>
-                <h3>B.S. Computer Science (Hons.) + Mathematics. Robotics & Autonomous Systems Minor</h3>
-                Below, you can find a list of relevant coursework.<br></br> <br></br>
+                <h2>Selected Coursework</h2>
+                <p>Graduate and undergraduate courses in machine learning, language, mathematics, and robotics.</p>
                 <div className="course-grid">
                     <div><a href="https://users.umiacs.umd.edu/~ying/teaching/CMSC_848/" target="_blank" rel="noopener noreferrer">CMSC848Q - Good AI Answers To Questions</a></div>
                     <div><a href="https://www.cs.umd.edu/~miyyer/cmsc723/" target="_blank" rel="noopener noreferrer">CMSC723 - Natural Language Processing</a></div>
@@ -149,7 +185,7 @@ function App() {
                     <div>ENME480 - Introduction to Robotics</div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
 

@@ -1,12 +1,11 @@
-import logo from './logo.svg';
-import './App.css';
 import MainPage from './MainPage.js'
 
 function App() {
   return (
-    <div>
+    <>
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <MainPage />
-    </div>
+    </>
   );
 }
 
