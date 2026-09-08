@@ -24,7 +24,9 @@ To write an update:
    notes, and manual results. Use `CURRENT_STATUS.md` to distinguish completed
    checkpoints from planned work. Check implementation code for algorithm names
    or formulas that the notes leave ambiguous.
-2. Append a dated subsection at the comment near the end of the active phase.
+2. Append a checkpoint-labeled subsection at the comment near the end of the active phase.
+   Use phase and checkpoint numbers without calendar dates or date ranges;
+   work on the project is intermittent.
    Explain what you tried, what happened, how you diagnosed it, what changed,
    and what remains unresolved. Include concrete observations and measurements
    when they explain the decision. Do not invent failures or personal reactions

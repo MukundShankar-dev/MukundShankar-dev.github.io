@@ -2,7 +2,8 @@ import React from 'react';
 import './MainPage.css';
 import umd from './files/umd.png';
 import agora from './files/agora.png';
-import git from './files/git.png';
+import toolCallPreview from './files/tool-call-probes.png';
+import confidencePreview from './files/confidence-probe-roc.png';
 import mukund from './files/mukund.jpg';
 import resume from './files/resume.pdf';
 import balloon from './files/balloons.jpeg';
@@ -33,8 +34,13 @@ function App() {
 
             <div className="experiences" id="projects">
                 <h2>Experiences/Projects</h2>
-                <div className="experience-item">
-                    <img src={git} alt="" />
+                <div className="experience-item project-item">
+                    <figure className="project-preview">
+                        <a href="/projects/dexvision/" aria-label="Explore DexVision in the project journal">
+                            <img src="/projects/dexvision/images/lift.png" alt="Simulated Shadow Hand lifting a block in the DexVision workcell" width="1200" height="800" />
+                        </a>
+                        <figcaption>Pick-and-place in MuJoCo</figcaption>
+                    </figure>
                     <div>
                         <h3><a href="/projects/dexvision/">DexVision</a></h3>
                         <span className="date">June 2026 - Present</span>
@@ -49,8 +55,13 @@ function App() {
                         </div>
                     </div>
                 </div>
-                <div className="experience-item">
-                    <img src={git} alt="" />
+                <div className="experience-item project-item">
+                    <figure className="project-preview">
+                        <a href={toolCallPreview} target="_blank" rel="noopener noreferrer" aria-label="View the tool-call probe accuracy chart at full size">
+                            <img src={toolCallPreview} alt="When2Call probe accuracy across layers for Gemma and Llama models" width="1600" height="933" loading="lazy" />
+                        </a>
+                        <figcaption>Tool-use decisions across layers · <a href={toolCallPreview} target="_blank" rel="noopener noreferrer">Enlarge ↗</a></figcaption>
+                    </figure>
                     <div>
                         <h3>Diagnosing Tool-Call Decision Making in Small Language Models</h3>
                         <span className="date">February 2026 - May 2026</span>
@@ -65,8 +76,13 @@ function App() {
                         </div>
                     </div>
                 </div>
-                <div className="experience-item">
-                    <img src={git} alt="" />
+                <div className="experience-item project-item">
+                    <figure className="project-preview">
+                        <a href={confidencePreview} target="_blank" rel="noopener noreferrer" aria-label="View the confidence-probe ROC curve at full size">
+                            <img src={confidencePreview} alt="Qwen 2.5 7B confidence probe on TriviaQA: ROC curve with AUC 0.953" width="1050" height="750" loading="lazy" />
+                        </a>
+                        <figcaption>Qwen 2.5 7B · TriviaQA ROC · <a href={confidencePreview} target="_blank" rel="noopener noreferrer">Enlarge ↗</a></figcaption>
+                    </figure>
                     <div>
                         <h3>Confidence Probes for Language Models</h3>
                         <span className="date">September 2025 - December 2025</span>
