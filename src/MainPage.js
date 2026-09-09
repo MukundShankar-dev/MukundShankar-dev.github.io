@@ -57,7 +57,7 @@ function App() {
                     </figure>
                 }>
                     <ul className="experience-bullets">
-                        <li>Building toward an LLM-orchestrated robot that combines reusable skills to follow instructions such as “place a part and press Start.”</li>
+                        <li>Building reusable robot skills so an LLM can request “place a part and press Start” without spending tokens on individual movement commands.</li>
                         <li>Developing a demonstration dataset and PyTorch imitation-learning pipeline to train and validate reach, pick-and-place, push, and button-press skills for a Shadow Hand in MuJoCo.</li>
                         <li>Planning visual perception and supervised execution to reuse these skills across inspection and workspace-setup tasks.</li>
                     </ul>

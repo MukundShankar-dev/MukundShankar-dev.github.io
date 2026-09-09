@@ -24,6 +24,7 @@ test('leads with recent technical projects and keeps project goals distinct from
   expect(within(confidence).getByText('0.953 ROC-AUC on held-out TriviaQA')).toBeInTheDocument();
   const dexvision = screen.getByRole('article', { name: 'DexVision' });
   expect(within(dexvision).getAllByRole('listitem')).toHaveLength(3);
+  expect(within(dexvision).getByText(/without spending tokens on individual movement commands/)).toBeInTheDocument();
   expect(within(dexvision).getByText(/Planning visual perception/)).toBeInTheDocument();
   expect(within(dexvision).getByText('In progress')).toBeInTheDocument();
   expect(screen.getAllByText('In progress')).toHaveLength(1);

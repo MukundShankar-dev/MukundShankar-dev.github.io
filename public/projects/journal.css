@@ -24,7 +24,6 @@ h3 { font-size: 1.15rem; margin-top: 32px; }
 .journal-entry { padding: 36px 0 48px; border-top: 1px solid var(--line); }
 .journal-entry h2 { margin: 12px 0 20px; }
 .journal-entry > p { font-family: Georgia, "Times New Roman", serif; font-size: 1.12rem; }
-.journal-entry > .checkpoint { margin: -4px 0 14px; font-family: inherit; color: var(--muted); font-size: 0.78rem; }
 .permalink { font-size: 0.8rem; }
 .replay-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 0 10px; }
 .replay-gallery figure { margin: 0; }
