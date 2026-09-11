@@ -1,6 +1,6 @@
 :root { --text: #292c33; --muted: #62646b; --link: #98452f; --border: #e6e1db; --paper: #fffefa; }
 * { box-sizing: border-box; }
-body { margin: 0; background: #f5f3ef; color: var(--text); font: 1rem/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+body { margin: 0; background: #f5f3ef; color: var(--text); font: 1rem/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-wrap: anywhere; }
 .page { max-width: 900px; margin: 24px auto; padding: 0 36px 28px; background: var(--paper); border-top: 3px solid var(--link); }
 a { color: var(--link); text-underline-offset: 3px; overflow-wrap: anywhere; }
 a:hover { text-decoration-thickness: 2px; }

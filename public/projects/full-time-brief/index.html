@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Full Time Brief is a live football briefing platform co-founded and built by Mukund Shankar, combining AI-assisted editorial infrastructure with near-live match coverage." />
+  <link rel="canonical" href="https://mukundshankar-dev.github.io/projects/full-time-brief/" />
+  <link rel="stylesheet" href="/projects/project.css" />
+  <link rel="icon" href="/favicon.ico" />
+  <title>Full Time Brief | Mukund Shankar</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="page">
+    <nav aria-label="Project navigation"><a href="/">Mukund Shankar</a><a href="/#projects">← Selected Work</a></nav>
+    <main id="main-content" tabindex="-1">
+      <header>
+        <h1>Full Time Brief</h1>
+        <p class="subtitle">Co-founder &amp; Engineer · 2026–Present</p>
+      </header>
+      <figure>
+        <a href="https://www.fulltimebrief.com" target="_blank" rel="noopener noreferrer"><img src="screenshot.jpg" alt="Full Time Brief homepage showing the daily football briefing, news stories, and upcoming fixtures" width="1440" height="1000" /></a>
+        <figcaption>The live product, September 2026.</figcaption>
+      </figure>
+      <section aria-labelledby="overview">
+        <h2 id="overview">Overview</h2>
+        <p>Full Time Brief is a live football briefing platform that brings together a daily selection of relevant news and near-live match coverage. I co-founded it with two others and own essentially all of the technical work; my co-founders primarily handle creative direction, ideation, and social media. We launched shortly before the 2026 World Cup, and the product has evolved rapidly since.</p>
+      </section>
+      <section aria-labelledby="what-i-built">
+        <h2 id="what-i-built">What I built</h2>
+        <p>I build and maintain the product end-to-end: the frontend, backend systems, databases, deployment, scheduled jobs, and production monitoring. Two recurring engineering problems shape the work: keeping match coverage current and consistent, and turning a broad stream of football news into a useful daily briefing.</p>
+      </section>
+      <section aria-labelledby="live-matches">
+        <h2 id="live-matches">Making live football data work without expensive licensed APIs</h2>
+        <p>Coverage spans the top five European leagues, with roughly 100 clubs potentially involved across a weekend. We fund the project personally and do not have access to expensive licensed sports-data infrastructure, so I built our own near-live collection and reconciliation approach.</p>
+        <p>Cron jobs are scheduled around upcoming fixtures. During active matches, a heartbeat-style process gathers information from multiple sources, targeting a refresh approximately once per minute. Source usage is coordinated to stay within rate limits. That cadence is a target: delayed sources and conflicting information still have to be handled before an update can become useful match state.</p>
+        <p>A match is more than a score that increases. An overturned goal can require undoing an earlier update; added time and extra time change how the clock and match phase should be understood. Sources may disagree, arrive late, or correct themselves. Reconciliation therefore has to accommodate state corrections instead of treating each new observation as final. Goal and video clips can also become available separately from the event itself, so their availability needs to be handled alongside the evolving match state.</p>
+      </section>
+      <section aria-labelledby="daily-briefing">
+        <h2 id="daily-briefing">Automating the daily briefing</h2>
+        <p>The daily pipeline gathers a broad set of football news and evaluates candidate stories against defined importance and relevance criteria. It selects roughly 5–12 stories per day, requires supporting evidence, and prepares writeups. Human editorial review remains part of the process where needed.</p>
+        <p>The system also finds and selects associated images, then automatically publishes and deploys approved stories. This is AI-assisted editorial infrastructure: it reduces the repetitive work of finding, triaging, preparing, and publishing relevant stories while retaining evidence and human review.</p>
+      </section>
+      <section aria-labelledby="engineering-with-ai">
+        <h2 id="engineering-with-ai">Engineering with AI</h2>
+        <p>My background before Full Time Brief was primarily in machine learning rather than web development or infrastructure. Building it required me to learn frontend development, backend systems, databases, deployment, scheduled jobs, and production monitoring. I use Codex extensively as a development partner across that stack, while retaining responsibility for system design, reviewing changes, testing integrations, debugging production failures, and verifying behavior.</p>
+      </section>
+      <section aria-labelledby="links">
+        <h2 id="links">Links</h2>
+        <p class="project-links"><a href="https://www.fulltimebrief.com" target="_blank" rel="noopener noreferrer">Visit Full Time Brief ↗</a></p>
+      </section>
+    </main>
+    <footer><a href="/#projects">← Back to Selected Work</a></footer>
+  </div>
+</body>
+</html>

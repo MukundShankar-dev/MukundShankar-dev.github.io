@@ -19,10 +19,11 @@ export const projects = [
         status: 'Live', visible: true,
         image: '/projects/full-time-brief/screenshot.jpg',
         imageAlt: 'Full Time Brief homepage with football briefings and match coverage',
-        href: 'https://www.fulltimebrief.com', external: true,
+        href: '/projects/full-time-brief/',
         description: 'A live football briefing platform I co-founded and built end-to-end, combining automated news discovery with near-live match coverage.',
         links: [
             { label: 'Website ↗', href: 'https://www.fulltimebrief.com', external: true },
+            { label: 'More details →', href: '/projects/full-time-brief/' },
         ],
     },
     {

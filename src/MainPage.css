@@ -8,7 +8,7 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: #f5f3ef; color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.55; }
+body { margin: 0; background: #f5f3ef; color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 1rem; line-height: 1.55; overflow-wrap: anywhere; }
 a { color: var(--link); text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 a:focus-visible { outline: 3px solid var(--link); outline-offset: 4px; }
@@ -44,7 +44,7 @@ h3 { margin: 0; font-size: 1.05rem; font-weight: 600; line-height: 1.4; }
 .project-thumbnail img { display: block; width: 140px; height: 88px; object-fit: cover; border-radius: 4px; }
 .project-copy { min-width: 0; }
 .project-copy p { margin: 5px 0 7px; line-height: 1.45; font-size: 0.95rem; }
-.project-status { white-space: nowrap; }
+.project-status { white-space: normal; }
 .education-item { padding-top: 12px; border-top: 1px solid var(--border); }
 .education-item h3 { margin-bottom: 8px; }
 .degree { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0 16px; margin: 2px 0; }
