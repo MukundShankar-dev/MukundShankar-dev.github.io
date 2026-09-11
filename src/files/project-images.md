@@ -10,3 +10,5 @@ The research thumbnails link to static detail pages with full-resolution figures
 
 - Full Time Brief uses `/projects/full-time-brief/screenshot.jpg`, captured from the public homepage on September 11, 2026, with its welcome guide dismissed.
 - The hidden LoopFormer entry uses a simple conceptual SVG of repeated shared blocks, not an experimental result.
+
+Homepage UI images use derivatives in `src/files/optimized/`: the 360×360 portrait is WebP, the 144×144 JuumeAI mark is WebP, and the 320×180 UMD mark is WebP. The original source files remain available alongside them for future edits.

@@ -1,4 +1,4 @@
-import mukund from '../files/mukund.jpg';
+import mukund from '../files/optimized/mukund.webp';
 import resume from '../files/resume.pdf';
 
 export default function Intro() {

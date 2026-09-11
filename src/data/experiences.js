@@ -1,5 +1,5 @@
-import juume from '../files/juume.png';
-import umd from '../files/umd.png';
+import juume from '../files/optimized/juume.webp';
+import umd from '../files/optimized/umd.webp';
 
 // Explicit editorial order, by start date. Current research stays in Intro only.
 export const experiences = [
