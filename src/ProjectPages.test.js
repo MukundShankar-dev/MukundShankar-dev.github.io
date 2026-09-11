@@ -30,3 +30,11 @@ test('research detail pages preserve the original reports and quantitative claim
   expect(read('public/projects/tool-calling/index.html').toString()).toMatch(/47.1% to 79.9%/);
   expect(read('public/projects/confidence-probes/index.html').toString()).toMatch(/0.953 ROC-AUC on held-out TriviaQA/);
 });
+
+test('keeps the public Full Time Brief page concise and product-focused', () => {
+  const filename = path.join(process.cwd(), 'public/projects/full-time-brief/index.html');
+  const page = new DOMParser().parseFromString(fs.readFileSync(filename, 'utf8'), 'text/html');
+  expect([...page.querySelectorAll('main section h2')].map(heading => heading.textContent)).toEqual(['Overview', 'My role', 'Building it', 'Links']);
+  expect(page.querySelector('section[aria-labelledby="links"] .project-links').textContent).toContain('Visit Full Time Brief');
+  expect(page.body.textContent).not.toMatch(/Codex|cron|rate limit|refresh interval|reconciliation|overturned goal|added time|extra time|5–12 stories|image selection|automatically publishes/i);
+});
