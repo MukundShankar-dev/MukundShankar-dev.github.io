@@ -51,6 +51,7 @@ h3 { margin: 0; font-size: 1.05rem; font-weight: 600; line-height: 1.4; }
 .education-note { margin: 2px 0; color: var(--muted); font-size: 0.95rem; }
 .coursework { margin: 10px 0 0; color: var(--muted); font-size: 0.9rem; }
 .earlier-work { margin: 0; padding: 10px 0; border-top: 1px solid var(--border); font-size: 0.95rem; }
+.earlier-work p { margin: 3px 0 0; }
 .earlier-work .inline-links { display: inline-flex; }
 .site-footer { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--muted); }
 

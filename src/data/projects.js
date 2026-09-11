@@ -64,7 +64,7 @@ export const projects = [
 
 export const earlierWork = [
     {
-        slug: 'agora', title: 'agora.', description: 'Meal-planning application I co-founded while at UMD.',
+        slug: 'agora', title: 'agora.', date: '2023', description: 'Meal-planning application I co-founded while at UMD.',
         links: [
             { label: 'UMD feature', href: 'https://www.cs.umd.edu/article/2023/10/umd-undergrads-revolutionize-meal-planning-innovative-app' },
             { label: 'App Store', href: 'https://apps.apple.com/us/app/agora/id6462011570?ign-itscg=30200&ign-itsct=apps_box_badge' },
@@ -72,7 +72,7 @@ export const earlierWork = [
         ],
     },
     {
-        slug: 'aerial-object-detector', title: 'Aerial Object Detector',
+        slug: 'aerial-object-detector', title: 'Aerial Object Detector', date: 'Feb 2023',
         description: 'First place, 2023 Northrop Grumman Hack Week. YOLOv5 balloon detection system.',
         links: [{ label: 'GitHub', href: 'https://github.com/MukundShankar-dev/aerial-object-classification' }],
     },

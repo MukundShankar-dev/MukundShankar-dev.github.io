@@ -55,4 +55,6 @@ test('keeps external links safe and historical links available', () => {
   const earlier = screen.getByRole('region', { name: 'Earlier Work' });
   expect(within(earlier).getByRole('link', { name: 'App Store' })).toHaveAttribute('href', expect.stringContaining('id6462011570'));
   expect(within(earlier).getByText(/YOLOv5 balloon detection/)).toBeInTheDocument();
+  expect(within(earlier).getByText('2023')).toBeInTheDocument();
+  expect(within(earlier).getByText('Feb 2023')).toBeInTheDocument();
 });

@@ -25,10 +25,15 @@ export default function MainPage() {
             <section id="earlier-work" aria-labelledby="earlier-work-title">
                 <h2 id="earlier-work-title">Earlier Work</h2>
                 {earlierWork.map(work => (
-                    <p className="earlier-work" key={work.slug}>
-                        <strong>{work.title}</strong> — {work.description}{' '}
-                        <span className="inline-links">{work.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}</span>
-                    </p>
+                    <article className="earlier-work" key={work.slug} aria-labelledby={`${work.slug}-title`}>
+                        <header className="item-heading">
+                            <h3 id={`${work.slug}-title`}>{work.title}</h3>
+                            <span className="date">{work.date}</span>
+                        </header>
+                        <p>{work.description}{' '}
+                            <span className="inline-links">{work.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}</span>
+                        </p>
+                    </article>
                 ))}
             </section>
             <footer className="site-footer">Mukund Shankar · <a href="mailto:smukund23@gmail.com">Email</a></footer>

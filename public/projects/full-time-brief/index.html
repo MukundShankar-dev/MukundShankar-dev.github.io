@@ -24,7 +24,7 @@
       </figure>
       <section aria-labelledby="overview">
         <h2 id="overview">Overview</h2>
-        <p>Full Time Brief is a live football briefing platform that brings together a daily selection of relevant news and near-live match coverage. I co-founded it with two others and own essentially all of the technical work; my co-founders primarily handle creative direction, ideation, and social media. We launched shortly before the 2026 World Cup, and the product has evolved rapidly since.</p>
+        <p>Full Time Brief is a live football briefing platform that brings together a daily selection of relevant news and near-live match coverage. I co-founded it with two others and lead the technical side end-to-end, while my co-founders focus on editorial direction, product ideation, and social media. We launched shortly before the 2026 World Cup, and the product has evolved rapidly since.</p>
       </section>
       <section aria-labelledby="what-i-built">
         <h2 id="what-i-built">What I built</h2>
@@ -32,8 +32,8 @@
       </section>
       <section aria-labelledby="live-matches">
         <h2 id="live-matches">Making live football data work without expensive licensed APIs</h2>
-        <p>Coverage spans the top five European leagues, with roughly 100 clubs potentially involved across a weekend. We fund the project personally and do not have access to expensive licensed sports-data infrastructure, so I built our own near-live collection and reconciliation approach.</p>
-        <p>Cron jobs are scheduled around upcoming fixtures. During active matches, a heartbeat-style process gathers information from multiple sources, targeting a refresh approximately once per minute. Source usage is coordinated to stay within rate limits. That cadence is a target: delayed sources and conflicting information still have to be handled before an update can become useful match state.</p>
+        <p>Coverage spans roughly 100 clubs across Europe's top five leagues. We fund the project personally and do not have access to expensive licensed sports-data infrastructure, so I built our own near-live collection and reconciliation approach.</p>
+        <p>Cron jobs are scheduled around upcoming fixtures. A heartbeat-style process gathers information from multiple sources, with a target refresh interval of about one minute during active matches. Source usage is coordinated to stay within rate limits. That cadence is a target: delayed sources and conflicting information still have to be handled before an update can become useful match state.</p>
         <p>A match is more than a score that increases. An overturned goal can require undoing an earlier update; added time and extra time change how the clock and match phase should be understood. Sources may disagree, arrive late, or correct themselves. Reconciliation therefore has to accommodate state corrections instead of treating each new observation as final. Goal and video clips can also become available separately from the event itself, so their availability needs to be handled alongside the evolving match state.</p>
       </section>
       <section aria-labelledby="daily-briefing">
