@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Studying when small language models should call tools, ask for clarification, or abstain, and probing their internal decisions." />
+  <link rel="canonical" href="https://mukundshankar-dev.github.io/projects/tool-calling/" />
+  <link rel="stylesheet" href="/projects/project.css" />
+  <link rel="icon" href="/favicon.ico" />
+  <title>Diagnosing Tool-Call Decision Making in Small LLMs | Mukund Shankar</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="page">
+    <nav aria-label="Project navigation"><a href="/">Mukund Shankar</a><a href="/#projects">← Selected Work</a></nav>
+    <main id="main-content" tabindex="-1">
+      <header><h1>Diagnosing Tool-Call Decision Making in Small LLMs</h1><p class="subtitle">February 2026 – May 2026</p></header>
+      <figure><a href="probes.png" aria-label="View the full-size research figure"><img src="probes.png" alt="When2Call probe accuracy across layers for Gemma and Llama models" width="1600" height="933" /></a><figcaption>When2Call probe accuracy across layers for Gemma and Llama models. Select the figure to enlarge.</figcaption></figure>
+      <h2>Overview</h2>
+<p>Studied how small language models decide whether to call a tool, ask for clarification, or abstain, and whether correct decisions can be recovered from internal representations when final behavior is wrong.</p>
+<h2>Methods and results</h2>
+<p>Benchmarked prompting, LoRA fine-tuning, and preference optimization for deciding when small LLMs should call tools, ask for clarification, or abstain.</p>
+<p>Raised Llama-3.2-3B’s When2Call decision accuracy from <strong>47.1% to 79.9%</strong> with supervised fine-tuning; evaluated on 3,652 test examples.</p>
+<p>Probed hidden states for correct decisions missed by model outputs; audited Constitutional AI-style training data for fabricated arguments and unsupported tool calls.</p>
+      <h2>Links</h2>
+      <p class="project-links"><a href="report.pdf" target="_blank" rel="noopener noreferrer">Report</a><a href="https://github.com/anirudhporuri/tool-call-decision-making/" target="_blank" rel="noopener noreferrer">Code on GitHub</a></p>
+    </main>
+    <footer><a href="/#projects">← Back to Selected Work</a></footer>
+  </div>
+</body>
+</html>

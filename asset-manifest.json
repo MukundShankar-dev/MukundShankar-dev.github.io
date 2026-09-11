@@ -1,25 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.c69c60d3.css",
-    "main.js": "/static/js/main.516f6678.js",
+    "main.css": "/static/css/main.4e1a219b.css",
+    "main.js": "/static/js/main.e9cc7436.js",
     "static/js/787.d1d4a2c2.chunk.js": "/static/js/787.d1d4a2c2.chunk.js",
-    "static/media/juume.png": "/static/media/juume.552269335e8f2a64affa.png",
-    "static/media/balloons.jpeg": "/static/media/balloons.53905bfca4cce71675ec.jpeg",
-    "static/media/mukund.jpg": "/static/media/mukund.32f273314972a9e675ee.jpg",
     "static/media/tool_call_report.pdf": "/static/media/tool_call_report.68c3591348db1fffe48a.pdf",
     "static/media/723_report.pdf": "/static/media/723_report.5d217748e475ebaf9368.pdf",
     "static/media/resume.pdf": "/static/media/resume.8465e5136f48f8b9be4c.pdf",
     "static/media/tool-call-probes.png": "/static/media/tool-call-probes.e9d4a0d6f43444207af5.png",
-    "static/media/umd.png": "/static/media/umd.568c86facc1873381d46.png",
     "static/media/confidence-probe-roc.png": "/static/media/confidence-probe-roc.9f5032b297b2617c50c5.png",
-    "static/media/agora.png": "/static/media/agora.0f33dceb856f6241e7c2.png",
+    "static/media/mukund.webp": "/static/media/mukund.87394a6ad012da3e7014.webp",
+    "static/media/umd.webp": "/static/media/umd.53979454bf1a982bbc45.webp",
+    "static/media/juume.webp": "/static/media/juume.79f2fecd9baf07540864.webp",
     "index.html": "/index.html",
-    "main.c69c60d3.css.map": "/static/css/main.c69c60d3.css.map",
-    "main.516f6678.js.map": "/static/js/main.516f6678.js.map",
+    "main.4e1a219b.css.map": "/static/css/main.4e1a219b.css.map",
+    "main.e9cc7436.js.map": "/static/js/main.e9cc7436.js.map",
     "787.d1d4a2c2.chunk.js.map": "/static/js/787.d1d4a2c2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.c69c60d3.css",
-    "static/js/main.516f6678.js"
+    "static/css/main.4e1a219b.css",
+    "static/js/main.e9cc7436.js"
   ]
 }
