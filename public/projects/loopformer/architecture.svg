@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="176" viewBox="0 0 280 176" role="img" aria-label="Repeated shared transformer blocks">
+<rect width="280" height="176" fill="#fffefa"/>
+<g fill="none" stroke="#98452f" stroke-width="2"><path d="M20 100h45m150 0h45M195 76V42H85v34"/><rect x="65" y="76" width="150" height="48" rx="4"/><path d="m79 66 6 10 6-10m159 28 10 6-10 6"/></g>
+<g fill="#292c33" font-family="sans-serif" font-size="13" text-anchor="middle"><text x="140" y="104">Shared blocks</text><text x="140" y="32">Repeat</text></g>
+</svg>

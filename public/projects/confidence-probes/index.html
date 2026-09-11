@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Lightweight probes for predicting language-model answer correctness, with evaluation across tasks and model sizes." />
+  <link rel="canonical" href="https://mukundshankar-dev.github.io/projects/confidence-probes/" />
+  <link rel="stylesheet" href="/projects/project.css" />
+  <link rel="icon" href="/favicon.ico" />
+  <title>Confidence Probes for Language Models | Mukund Shankar</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="page">
+    <nav aria-label="Project navigation"><a href="/">Mukund Shankar</a><a href="/#projects">← Selected Work</a></nav>
+    <main id="main-content" tabindex="-1">
+      <header><h1>Confidence Probes for Language Models</h1><p class="subtitle">September 2025 – December 2025</p></header>
+      <figure><a href="roc.png" aria-label="View the full-size research figure"><img src="roc.png" alt="Qwen 2.5 7B confidence probe on TriviaQA: ROC curve with AUC 0.953" width="1050" height="750" /></a><figcaption>Qwen 2.5 7B confidence probe on TriviaQA: ROC curve with AUC 0.953. Select the figure to enlarge.</figcaption></figure>
+      <h2>Overview</h2>
+<p>Trained lightweight probes over internal language-model signals to predict answer correctness across datasets and model sizes, then studied how those signals fail under distribution shift.</p>
+<h2>Methods and results</h2>
+<p>Designed and built the feature-collection, training, and evaluation pipeline for LLM confidence probes, using a 424K-example corpus across five QA and reasoning benchmarks.</p>
+<p>Trained MLPs on hidden states and token probabilities to estimate answer correctness: <strong>0.953 ROC-AUC on held-out TriviaQA</strong> with Qwen-2.5-7B.</p>
+<p>Evaluated transfer across tasks and model sizes, identifying failures caused by task mismatch and miscalibrated decision thresholds.</p>
+      <h2>Links</h2>
+      <p class="project-links"><a href="report.pdf" target="_blank" rel="noopener noreferrer">Report</a><a href="https://github.com/MukundShankar-dev/Confidence-Probes-For-LMs" target="_blank" rel="noopener noreferrer">Code on GitHub</a></p>
+    </main>
+    <footer><a href="/#projects">← Back to Selected Work</a></footer>
+  </div>
+</body>
+</html>
