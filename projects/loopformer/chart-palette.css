@@ -1,0 +1,37 @@
+/* Series colors belong to a chart family, consistently across architectures. */
+:root {
+  --plot-training-train: #ac885a;
+  --plot-training-validation: #634b3d;
+
+  --plot-accuracy-answer: #2f609f;
+  --plot-accuracy-trajectory: #138caf;
+  --plot-accuracy-extra: #142e57;
+  --plot-accuracy-answer-band: rgba(47, 96, 159, .12);
+  --plot-accuracy-trajectory-band: rgba(19, 140, 175, .12);
+
+  --plot-timing-extra: #77212a;
+  --plot-timing-exact: #16835f;
+  --plot-timing-joint: #f2785b;
+
+  --plot-timing-muted: #df9c24;
+  --plot-timing-missing: #7a8793;
+
+  --plot-countdown-initial: #603db4;
+  --plot-countdown-remaining: #a68ae2;
+  --plot-countdown-decrement: #34234e;
+
+  --plot-survival-step: #407d3a;
+  --plot-survival-prefix: #839a32;
+  --plot-survival-band: rgba(131, 154, 50, .12);
+
+  --plot-errors-primary: #a34469;
+  --plot-errors-censored: #d49bac;
+
+  --plot-structure-extra: #222225;
+  --plot-structure-trajectory: #54545a;
+  --plot-structure-answer: #9a9aa1;
+  --plot-responses-direct: #d15c22;
+  --plot-responses-original: #7850a1;
+  --plot-responses-sft: #007f73;
+  --plot-responses-reference: #bfa7d4;
+}

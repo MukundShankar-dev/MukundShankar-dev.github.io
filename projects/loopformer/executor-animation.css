@@ -1,0 +1,74 @@
+/* Two aligned state streams, with local recurrence and a distinct control edge. */
+.executor-story { padding:24px; }
+.executor-story .arch-heading { align-items:start; }
+.ex-position { flex:0 0 auto; padding:5px 9px; border:1px solid #d9d8cf; border-radius:5px; color:#686b67; font:11px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+.executor-story .arch-prompt { margin-top:20px; }
+.executor-story .arch-controls { margin:20px 0 18px; border-bottom:0; padding-bottom:0; }
+.executor-story [data-play] { min-width:139px; }
+.ex-progress { margin-left:auto; color:#77796f; font:11px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-variant-numeric:tabular-nums; }
+.executor-story .ex-stage-heading h5 { margin:0 0 7px; font:600 17px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+.executor-story .ex-stage-heading p { margin:0; min-height:3.3em; font-size:14px; line-height:1.6; color:#64675f; }
+.ex-diagram-scroll { overflow-x:auto; margin:24px -6px 0; }
+.ex-diagram-scroll:focus-visible { outline:2px solid #287878; outline-offset:4px; }
+.ex-unified-svg { display:block; width:100%; min-width:740px; height:auto; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+.ex-pan-hint { display:none; }
+.ex-setup-wire .ex-arrow { stroke-dasharray:5 4; }
+.ex-wire-label { fill:#6a6e65; font-size:12px; }
+.ex-final-symbol { fill:#287878; font:34px Georgia,serif; }
+.ex-part.is-active > rect:first-child { stroke:#287878; stroke-width:2.4; }
+.ex-wire-group.is-active .ex-arrow { stroke:#287878; stroke-width:2.3; }
+.ex-card { fill: #fffefa; stroke: #d7d9cf; stroke-width: 1.3; }
+.ex-module { fill: #f2f0ea; stroke: #bfc2b7; stroke-width: 1.4; }
+.ex-module-frozen, .ex-fixed { fill: #a6ada0; }
+.ex-module-train { fill: #b57b60; }
+.ex-state { fill: #287878; }
+.ex-control { fill: #b16d50; }
+.ex-control-box { fill: #f6eae2; stroke: #bd8f78; stroke-width: 1.4; }
+.ex-decision-box { fill: #edf2e9; stroke: #99b5a2; stroke-width: 1.4; }
+.ex-label { fill: #30342f; font-size: 14px; font-weight: 550; }
+.ex-small { fill: #6a6e65; font-size: 12px; }
+.ex-kicker { fill: #788070; font-size: 10px; letter-spacing: 1.2px; }
+.ex-mono { fill: #4d5550; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+.ex-letter { fill: #30342f; font: 30px Georgia, serif; }
+.ex-answer { fill: #287878; font: 52px Georgia, serif; }
+.ex-decision { fill: #287878; font-size: 19px; font-weight: 550; }
+.ex-arrow { fill: none; stroke: #8a9189; stroke-width: 1.6; }
+.ex-pulse { fill: none; stroke: #287878; stroke-width: 2.7; stroke-dasharray: 12 88; opacity: 0; }
+.executor-story.is-playing .ex-wire-group.is-active .ex-pulse { opacity: 1; animation: ex-flow 2.8s linear infinite; }
+@keyframes ex-flow { from {stroke-dashoffset:100} to {stroke-dashoffset:0} }
+
+.executor-story .ex-retained { display:flex; gap:16px; padding:15px 0 19px; border-bottom:1px solid #deded5; }
+.ex-retained-label { flex:0 0 84px; color:#287878; font:600 11px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+.executor-story .ex-retained p { margin:0; min-height:4.8em; color:#64675f; font-size:12px; line-height:1.6; }
+@media(max-width:540px) {
+ .executor-story { padding:18px 14px; }
+ .executor-story .ex-position { font-size:10px; }
+ .executor-story .ex-stage-heading h5 { font-size:16px; }
+ .executor-story .ex-stage-heading p { font-size:13px; min-height:6.6em; }
+ .executor-story .ex-pan-hint { display:block; margin:14px 0 0; font-size:11px; color:#77796f; }
+ .ex-diagram-scroll { margin-top:12px; }
+ .executor-story .ex-retained { gap:10px; }
+ .ex-retained-label { flex-basis:62px; }
+}
+@media(prefers-reduced-motion:reduce) { .executor-story.is-playing .ex-pulse { animation:none; opacity:0; } }
+
+.ex-setup-background { fill:#f3f2ec; stroke:none; }
+.ex-executor-box { fill:#edf4f0; stroke:#90b3a9; stroke-width:1.3; }
+.ex-memory-box { fill:#f5f4ee; stroke:#d2d5c8; stroke-width:1; }
+.ex-lane-label { fill:#397d79; font-size:11px; font-weight:650; letter-spacing:1px; }
+.ex-controller-label, .ex-control-label { fill:#a16b51; }
+.ex-control-label { font-size:12px; }
+.ex-path-label { fill:#397d79; font-size:12px; font-weight:650; letter-spacing:.6px; }
+.ex-verdict { fill:#a16b51; font-size:12px; }
+.ex-junction { fill:#397d79; }
+.ex-wire-state .ex-arrow { stroke:#397d79; }
+.ex-wire-control .ex-arrow { stroke:#a16b51; }
+.ex-wire-neutral .ex-arrow { stroke:#96998e; }
+[data-wire="choose"] .ex-arrow { stroke-dasharray:5 4; }
+.ex-wire-control.is-active .ex-arrow { stroke:#a16b51; }
+.ex-wire-control .ex-pulse { stroke:#a16b51; }
+.ex-part[data-part="controller"].is-active > rect:first-child,
+.ex-part[data-part="previous"].is-active > rect:first-child,
+.ex-part[data-part="updated"].is-active > rect:first-child,
+.ex-part[data-part="decision"].is-active > rect:first-child,
+.ex-part[data-part="initial-controller"].is-active > rect:first-child { stroke:#a16b51; }

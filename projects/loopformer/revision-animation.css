@@ -1,0 +1,14 @@
+.revision-demo .revision-mode-note { margin: 0; color: var(--muted); font-size: .76rem; min-height: 2.8em; }
+.revision-demo .arch-prompt { margin-top: 10px; }
+.revision-demo .arch-canvas { margin-top: 16px; }
+.revision-memory rect { fill: #f0efeb; stroke: #b7b8b0; stroke-dasharray: 4 3; }
+.revision-memory-wire { stroke: #9b9f95; stroke-dasharray: 4 3; }
+.revision-head .arch-block-bg { fill: #f8eee8; stroke: #c39683; }
+.revision-head .arch-tag { fill: #98452f; }
+.revision-stop { font-size: 12px; fill: #287878; font-weight: 600; }
+.revision-demo .arch-explanation { min-height: 110px; }
+@media (max-width: 540px) {
+  .revision-demo .arch-explanation { min-height: 146px; }
+}
+
+
