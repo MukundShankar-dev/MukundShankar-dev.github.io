@@ -1,4 +1,5 @@
 import { SYMBOLS, generateGraph, validateRequest, parseRules, referenceTrace, verifySnapshot } from './core.mjs';
+import { submitProxy } from './proxy.mjs';
 
 const $ = id => document.getElementById(id);
 let config = { space: null, maxSteps: 256 }, examples = [], client = null, submission = null;
@@ -111,7 +112,7 @@ function render() {
   metric('metric-trajectory', summary?.complete_trajectory, 'All steps correct ✓', 'Contains errors / missing steps');
   metric('metric-stop', summary?.exact_stop, 'Exactly on time ✓', summary?.stop_reason === 'cap' ? 'Safety cap reached' : 'Early or late');
   text('metric-error', summary ? summary.first_error ?? 'None' : '—');
-  text('run-details', frame?.status === 'complete' ? `${frame.source === 'recorded' ? 'Recorded model run' : 'Live model run'} · ${rows.length} loops · ${summary.stop_reason === 'head' ? 'learned stop' : 'safety cap'}${frame.inference_seconds != null ? ` · ${frame.inference_seconds.toFixed(2)} s including observation/export overhead` : ''}` : 'Reference answers are calculated separately and never fed to the model.');
+  text('run-details', frame?.status === 'complete' ? `${frame.source === 'recorded' ? 'Recorded model run' : frame.served_from_cache ? 'Cached model run' : 'Live model run'} · ${rows.length} loops · ${summary.stop_reason === 'head' ? 'learned stop' : 'safety cap'}${frame.inference_seconds != null ? ` · ${frame.inference_seconds.toFixed(2)} s including observation/export overhead` : ''}` : 'Reference answers are calculated separately and never fed to the model.');
 }
 function pause() { playing = false; clearTimeout(timer); timer = null; }
 function advance() {
@@ -140,9 +141,9 @@ async function runModel() {
   clearResult(); const currentGeneration = generation; const submittedRequest = structuredClone(request);
   setBusy(true); text('source-badge', 'Live model'); status('Connecting to Hugging Face. A sleeping Space may need time to wake up…');
   try {
-    if (!client) { const { Client } = await import(config.clientModule); client = await Client.connect(config.space, { events: ['data', 'status'] }); }
+    if (!config.proxyUrl && !client) { const { Client } = await import(config.clientModule); client = await Client.connect(config.space, { events: ['data', 'status'] }); }
     if (currentGeneration !== generation) return;
-    submission = client.submit('/predict', { request: submittedRequest });
+    submission = config.proxyUrl ? submitProxy(config.proxyUrl, submittedRequest) : client.submit('/predict', { request: submittedRequest });
     for await (const message of submission) {
       if (currentGeneration !== generation) break;
       if (message.type === 'status') {
@@ -154,10 +155,11 @@ async function runModel() {
         const next = verifySnapshot(message.data[0], submittedRequest);
         if (next.trace.length < (frame?.trace.length ?? 0)) throw Error('The stream moved backwards. Please retry.');
         const first = !frame; frame = next;
+        if (frame.served_from_cache) text('source-badge', 'Cached model run');
         if (first && !reducedMotion) { playing = true; timer = setTimeout(advance, Number($('speed').value)); }
         render();
         if (frame.status === 'complete') {
-          status(`Inference complete: ${frame.trace.length} predictions. Playback runs at your chosen pace.`);
+          status(`${frame.served_from_cache ? 'Replayed a cached model run' : 'Inference complete'}: ${frame.trace.length} predictions. Playback runs at your chosen pace.`);
           break;
         }
       }

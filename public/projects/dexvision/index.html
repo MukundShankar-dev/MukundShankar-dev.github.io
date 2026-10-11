@@ -8,6 +8,7 @@
     <link rel="canonical" href="https://mukundshankar-dev.github.io/projects/dexvision/" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/projects/journal.css" />
+    <script defer src="/projects/journal-navigation.js"></script>
     <title>DexVision — Project Journal | Mukund Shankar</title>
   </head>
   <body>
@@ -21,17 +22,18 @@
         <header class="project-header">
           <p class="eyebrow">A project in progress</p>
           <h1>DexVision</h1>
-          <p>I want a robot to carry out instructions like “put this part on the inspection pad and press Start” using reusable skills. An LLM should choose the object, destination, and sequence of skills—not spend tokens generating every wrist movement and finger command. The goal is to keep expensive language-model reasoning at the task level while smaller controllers handle movement and feedback.</p>
-          <p>That means building the skills first. I started by controlling a simulated Shadow Hand with a webcam, recorded demonstrations, and tried training policies to imitate them. Those policies failed. I then changed how movements were controlled and demonstrations were collected. This journal follows those experiments, including what the failures did—and did not—tell me. The LLM orchestrator and vision-based execution are still future work.</p>
+          <p>The world of computers that we can interact with as human beings naturally and intuitively has gotten astronomically better with the progress of Large Language Models. Models like GPT, Claude, and even many open-source models can understand prompts, think about problems, and interact with humans in a conversational and context-aware manner reasonably well, and these capabilities are rapidly improving with new frontier models being released practically every other week. </p>
+          <p>However, a field that has not evolved at quite the same pace as language models is embodied intelligence. Some robotic systems are getting quite sophisticated - with the ability to walk, run, and even jump - but the same boom that Natural Language Processing had in 2023 has not quite happened for robotics just yet.</p>
+          <p>I believe that for a system that a human can truly interact with, a combination of both of these types of intelligence is necessary. I want to be able to tell a robot "I want a sandwich", or "clean up my desk please", and have a system that understands what I want and then goes and executes the required actions. With current technologies, I think one possible approach is to train a robot to have some fundamental, reusable skills, and then let a system that can understand natural language string those skills together in order to fullfill user requests. This is precisely the goal of DexVision.</p>
           <p><a href="https://github.com/MukundShankar-dev/DexVision" target="_blank" rel="noopener noreferrer">Code and development notes on GitHub ↗</a></p>
         </header>
 
         <nav class="journal-index" aria-label="Journal entries">
           <h2>Read from the beginning</h2>
-          <a href="#hand-control"><span class="index-phase">Phase 1</span><span>Making the simulated hand follow mine</span></a>
-          <a href="#demonstration-data"><span class="index-phase">Phase 2</span><span>Recording movements that survive replay</span></a>
-          <a href="#learning-loop"><span class="index-phase">Phase 3</span><span>From demonstrations to policies—and why they failed</span></a>
-          <a href="#pick-place-anchor"><span class="index-phase">Phase 4</span><span>Replacing teleop collection with scripted demonstrations</span></a>
+          <a href="#hand-control"><span class="index-phase">Phase 1</span><span>Teleoperation: Making the simulated hand follow mine</span></a>
+          <a href="#demonstration-data"><span class="index-phase">Phase 2</span><span>Recording reliable replayable movements</span></a>
+          <a href="#learning-loop"><span class="index-phase">Phase 3</span><span>From demonstrations to policies - and why they failed</span></a>
+          <a href="#scripted-demonstrations"><span class="index-phase">Phase 4</span><span>Replacing teleop collection with scripted demonstrations</span></a>
         </nav>
 
         <article class="journal-entry" id="hand-control" aria-labelledby="hand-title">
@@ -39,31 +41,40 @@
             <p class="eyebrow">Phase 1</p>
             <h2 id="hand-title">Making the simulated hand follow mine</h2>
           </header>
-          <p>The first goal was teleoperation: move my hand in front of a camera and have a simulated hand follow it. I tested camera input, tracking, finger measurements, and robot control separately so that a bad movement could be traced back to its source.</p>
+          <p>The first milestone was teleoperation: move my hand in front of a camera and have a simulated hand follow it. Sounds simple enough. The reason I chose teleoperation is because it gives us a way to produce example movements training-free, and it is relatively cheap to verify whether this method is precise enough to come up with the reproducible tasks I wanted.</p>
 
-          <h3 id="camera-test">Camera first, then hand tracking</h3>
-          <p>I opened the webcam with OpenCV's <code>cv2.VideoCapture</code>, displayed the frame rate, and checked that <code>q</code> closed it cleanly. The feed ran at about 30 FPS. Only then did I add hand detection.</p>
-          <p id="hand-landmarks">MediaPipe Hands supplies 21 landmarks, handedness, and a confidence score. The tracker also supports the newer Tasks Hand Landmarker API, loading a local model and processing timestamped video frames. It converts OpenCV's BGR frames to RGB, draws the skeleton, and returns an explicit no-hand result when tracking is lost.</p>
-          <p>Left/right labels were initially reversed: MediaPipe assumes a selfie-mirrored image, but the webcam input was unmirrored. Correcting that convention fixed the labels without changing the underlying landmarks.</p>
+          <h3 id="camera-test">Camera control and hand feature tracking</h3>
+          <p>I accessed my camera's video feed using OpenCV's <code>cv2.VideoCapture</code> at 30fps (my camera's maximum framerate). From there, the next step was to extract hand features from the video feed.</p>
+          <p id="hand-landmarks">With the camera feed now available, MediaPipe can estimate the hand within each frame. It returns 21 labeled coordinates: the wrist and four points along each finger, ending at the fingertip. These are simple geometric points in the video frame, which is not rich enough information for hand control. I wrote a wrapper which converted OpenCV’s BGR image to RGB, corrected MediaPipe’s handedness label for my unmirrored feed, and returned an explicit no-hand result when tracking was lost. I computed the control values from the landmarks in the next step.</p>
 
           <h3 id="first-features">Turning landmarks into finger movement</h3>
-          <p>I used geometry, not another learned model, to extract finger curl, thumb–index pinch distance, and palm orientation. Live bars showed whether an open hand, fist, or pointing gesture produced the expected controls before I connected them to the robot.</p>
-          <p id="feature-smoothing">Raw measurements jittered between frames. An exponential moving average smoothed each control: <code>s = α × x + (1 − α) × s_previous</code>. Lower alpha reduced jitter but added lag. Tracking loss held the last stable controls, with an optional decay toward neutral, rather than sending missing values to the simulator.</p>
+          <p>The index curl value was something I was computing from MediaPipe’s landmark coordinates, not a direct reading. For the index finger, its four landmarks are the main knuckle (MCP), middle joint (PIP), distal joint (DIP), and fingertip (landmark indices 5, 6, 7, 8), and my original curl calculation found the bend angles at PIP and DIP using the dot product of the two segments meeting at each joint. It mapped an angle near 170° to “open” (0), an angle near 90° to “closed” (1), clipped the values to the 0–1 range, and averaged them.</p>
+          <p>When testing out this approach, I noticed that the calculated controls were very jittery, so I applied an exponential moving average to smooth each control: <code>s = α × x + (1 − α) × s_previous</code>. Here, lowering the alpha value reduces jitter, but introduces some lag so that required some tuning to feel responsive without breaking the natural feel of the hand movement.</p>
+          <p>To connect my hand features to the simulated hand, I needed a retargeting rule. For each robot finger actuator, I chose an open target and a closed target. A human control value between 0 and 1 interpolated between those targets, with the result clipped to the actuator’s allowed range. This gave me a simple, bounded way to test the pipeline, even though a human finger and a Shadow Hand finger do not have identical geometry.</p>
 
           <h3 id="simulation-checks">Connecting the controls to the Shadow Hand</h3>
-          <p>I first checked a minimal MuJoCo scene and a simple debug hand: move one joint, then play open, fist, point, pinch, and relaxed poses. I then switched to the right Shadow Hand E3M5 from MuJoCo Menagerie. Its 20 wrist/finger actuators include tendon-coupled joints, so a visible joint does not always have its own independent control.</p>
-          <p>The retargeter maps each human finger control between configured open and closed actuator targets, with scaling and limit clipping. This is how a landmark measurement becomes a robot command; it is not a direct copy of human joint angles.</p>
+          <p>Before switching to the Shadow Hand E3M5 from MuJoCo Menagerie, I initially used a simple MuJoCo scene with a very minimal hand to make sure that actuator commands produced the expected movements. I tried a few different poses (open palm, curling each finger, closed fist, pinch), then moved to the Shadow Hand for live control testing.</p>
 
-          <h3 id="finger-coupling">One-finger testing exposed the wrong input signal</h3>
-          <p>With only the robot's index finger enabled, changing my other fingers still changed its command. The robot was following the input correctly; the input itself depended too much on the surrounding hand pose. Broad open-hand/fist tests had missed this.</p>
-          <p>I rebuilt the extractor around each finger's own base knuckle, intermediate joints, and tip. Local joint angles measured curl; tip displacement along a palm-relative forward axis, divided by finger length, measured extension. The palm frame came from the wrist and index, middle, and pinky knuckles. The thumb used separate joint geometry and an opposition measure.</p>
-          <p>Extension matched the live poses more intuitively than raw curl. For the four long fingers, the final control became <code>bend = clamp(1 − extension, 0, 1)</code>, derived after smoothing extension. Raw curl stayed visible for diagnosis; the thumb kept a conservative mapping. Synthetic single-finger tests and another live index-only trial checked that the controls were now independent.</p>
-          <p id="full-hand">I then connected all five fingers. Open palm, fist, and pointing worked, while pinch and peace remained approximate. This controlled the fingers, but the fixed-base hand still could not travel to an object.</p>
+          <h3 id="finger-coupling">A new extractor</h3>
+          <p>Testing exposed that there was an issue with fingers coupling with each other - curling just my index would make the whole hand close up, and vice versa. Results weren't consistent, but all the fingers were being influenced by each other's movements.</p>
+          <p>To isolate the problem, I ran a one-finger test: only the simulated index finger could receive commands, while the other robot fingers stayed frozen at their open positions. Moving my index finger, the simulation followed as expected, but moving my middle or ring finger could move it equally as well. I found that the calculated index control value itself was changing when I moved other parts of my hand, even when my index pose remained similar. In the diagnostic, an extended index read about 0.17 and a curled index about 0.70–0.78, but changing the rest of my hand could push a similar-looking index pose into the curled range.</p>
+          <p>That calculation is sensitive to errors in the estimated 3D landmarks. Isolating the robot index finger did not isolate the landmark estimate or make that curl number reliable.</p>
+          <p>I replaced the control signal with a measurement of how far each fingertip extends along its own palm-relative direction. First, I constructed a coordinate frame from the wrist and knuckles where one axis runs across the palm from pinky to index, another points from the wrist toward the fingers, and their cross product gives an approximate palm normal. For each long finger, I added the lengths of its three landmark segments, then projected the vector from its MCP to its tip onto the palm’s wrist-to-fingers axis. Dividing that projection by the finger’s chain length gives a normalized extension value. This is approximately 1 when the finger is extended and closer to 0 when folded. Of course, each finger uses its own joint values from MediaPipe. I tested open hand, fist, individual raised fingers, and a peace sign to check whether changing one finger altered unrelated readings, and this time round, they worked.</p>
+          <p>The live extension readings tracked the four long fingers more intuitively than the angle-based curl readings, so I made the control value <code>bend = clamp(1 − extension, 0, 1)</code>. The older raw curl values remained visible for debugging, rather than driving those robot fingers. The thumb kept a separate, conservative calculation because its geometry and opposition motion are different. As before, I used an exponential moving average for smoothing movements.</p>
+
+          <h3 id="finger-retargeting">Turning a human finger value into robot targets</h3>
+          <p>I fed the new bend signal through the same retargeting rule: <code>target = clamp(open + (closed − open) × bend, actuator_min, actuator_max)</code>. The Shadow Hand’s MuJoCo model expects target values for named actuators. This is a hand-designed mapping, not a learned model or a full inverse-kinematics solve.</p>
+          <p>For example, the index configuration maps a bend of 0 to −0.15 for actuator <code>rh_A_FFJ3</code> and 0.05 for <code>rh_A_FFJ0</code>; a bend of 1 maps them to 1.20 and 2.25. At <code>bend = 0.30</code>, interpolation requests 0.255 and 0.710, respectively, before limit clipping. One human control therefore drives multiple robot actuators in a predefined relationship. The resulting values are <em>position targets</em>: MuJoCo’s actuators and physics move the hand toward them, so the simulated joint positions need not equal the targets instantly. This simple bounded mapping was the finger retargeter I kept for live teleoperation.</p>
 
           <h3 id="base-control-debugging">Moving the whole hand</h3>
-          <p>Translation and wrist rotation were harder to separate. Making a fist or turning my wrist could move the robot sideways or into the floor boundary. Left/right conventions, noisy orientation, and weak depth cues all affected the mapping. Gain changes and stronger smoothing helped individual symptoms but did not make the combined controls intuitive.</p>
-          <p id="calibrated-pose">I rebuilt them around a calibrated neutral pose, captured with <code>c</code>. Palm-center displacement in the image controlled lateral position and height. Apparent hand size controlled depth: larger than the calibrated hand meant closer to the camera. Smoothing, a deadband, and workspace bounds made that usable, but it remained a relative depth proxy—not measured 3D position.</p>
-          <p>Wrist rotation also became relative to calibration. I tested roll before adding pitch and yaw, with axis remapping, rate limits, and smoothing. The initial 45-degree bounds restricted approach poses too much; I widened roll/yaw to 120 degrees and pitch to 110 degrees. By the end, fingers, translation, depth, and wrist rotation worked together. Recording would reveal whether those movements were reliable enough to learn from.</p>
+          <p>So far, to work modularly on each movement at a time, we have only looked at the fingers with an upright hand - we've not touched translation or wrist rotation.</p>
+          <p>The difficult part that required a lot of iteration was wrist control - roll/yaw would get mixed with each other and I had to implement them one by one. The wrist would constantly go into unsafe control values, so I needed to tune those bounds I set. The data was noisy in terms of orientation, and depth data was not very reliable.</p>
+          <p>We start by centering the robot at a neutral, upright position in the middle of the frame (I put my hand in this position then press <code>c</code> on my keyboard). From there, we can center our subsequent movements around this zero-coordinate.</p>
+          <p>With calibration, axis mapping, smoothing, and control bounds, I was able to iterate enough to get to a teleoperation module that felt good to use.</p>
+
+          <h3 id="phase-1-end">Wrapping up phase 1</h3>
+          <p>By the end of Phase 1, the result was a teleoperation system where I could visibly control the Shadow Hand’s fingers, base movement, approximate depth, and wrist orientation together. That passed the teleoperation prototype’s manual checks (qualitatively checking if teleoperation moves correctly in a small toy environment). The next step was to introduce objects to the workspace to see how well we can interact with them in our set tasks (push, place, pick, pick and place).</p>
+
           <a class="permalink" href="#hand-control">Link to phase 1</a>
         </article>
 
@@ -144,8 +155,8 @@
           <a class="permalink" href="#learning-loop">Link to phase 3</a>
         </article>
 
-        <article class="journal-entry" id="pick-place-anchor" aria-labelledby="anchor-title">
-          <header>
+        <article class="journal-entry" id="scripted-demonstrations" aria-labelledby="anchor-title">
+          <header id="pick-place-anchor">
             <p class="eyebrow">Phase 4</p>
             <h2 id="anchor-title">Replacing teleop collection with scripted demonstrations</h2>
           </header>

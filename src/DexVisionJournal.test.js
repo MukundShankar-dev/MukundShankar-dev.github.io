@@ -7,7 +7,7 @@ const journal = new DOMParser().parseFromString(fs.readFileSync(journalPath, 'ut
 test('presents four chronological phases without internal subphase labels', () => {
   const entries = [...journal.querySelectorAll('.journal-entry')];
   expect(entries.map(entry => entry.id)).toEqual([
-    'hand-control', 'demonstration-data', 'learning-loop', 'pick-place-anchor',
+    'hand-control', 'demonstration-data', 'learning-loop', 'scripted-demonstrations',
   ]);
   expect(entries.map(entry => entry.querySelector('.eyebrow').textContent)).toEqual([
     'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4',

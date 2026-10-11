@@ -1,6 +1,6 @@
 # Homepage project images
 
-These are actual project outputs, not illustrative mockups.
+Project thumbnails and their provenance:
 
 - DexVision reuses `/projects/dexvision/images/lift.png`. See the README in that image directory for the episode and render provenance.
 - `tool-call-probes.png` is a full-page PNG rendering of `plot_results_new/output/figures/probe_layer_accuracy_comparison.pdf` from the local Tool-Call-Decision-Making repository. Rendered using macOS PDFKit, without changing the chart data or labels.
@@ -9,6 +9,6 @@ These are actual project outputs, not illustrative mockups.
 The research thumbnails link to static detail pages with full-resolution figures. Static copies of the original figures and report PDFs live beside those pages; the original source assets and homepage report imports are retained. Keep both copies in sync when updating a report.
 
 - Full Time Brief uses `/projects/full-time-brief/screenshot.jpg`, captured from the public homepage on September 11, 2026, with its welcome guide dismissed.
-- The hidden LoopFormer entry uses a simple conceptual SVG of repeated shared blocks, not an experimental result.
+- LoopFormer uses `/projects/loopformer/cover.png`, the illustration supplied by the user on October 11, 2026. The image is copied unchanged and displayed in full without cropping; it is illustrative rather than an experimental result.
 
 Homepage UI images use derivatives in `src/files/optimized/`: the 360×360 portrait is WebP, the 144×144 JuumeAI mark is WebP, and the 320×180 UMD mark is WebP. The original source files remain available alongside them for future edits.

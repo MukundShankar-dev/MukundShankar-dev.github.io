@@ -8,7 +8,7 @@ export const projects = [
     {
         slug: 'loopformer', title: 'LoopFormer', date: 'Sep 2026 – Present',
         status: 'Early experiment', visible: true,
-        image: '/projects/loopformer/architecture.svg', imageAlt: 'Shared transformer blocks applied repeatedly between input and output',
+        image: '/projects/loopformer/cover.png', imageAlt: 'LoopFormer illustration showing input, preprocessing, a recurrent transformer block, and output', imageFit: 'contain',
         href: '/projects/loopformer/',
         links: [
             { label: 'GitHub', href: 'https://github.com/MukundShankar-dev/loopformer', external: true },
