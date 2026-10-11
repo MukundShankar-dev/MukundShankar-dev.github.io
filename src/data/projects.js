@@ -7,11 +7,13 @@ import confidenceReport from '../files/723_report.pdf';
 export const projects = [
     {
         slug: 'loopformer', title: 'LoopFormer', date: 'Sep 2026 – Present',
-        status: 'Early experiment', visible: false,
-        // No detail page until the experiment has substantive results.
+        status: 'Early experiment', visible: true,
         image: '/projects/loopformer/architecture.svg', imageAlt: 'Shared transformer blocks applied repeatedly between input and output',
-        href: 'https://github.com/MukundShankar-dev/loopformer', external: true,
-        links: [{ label: 'GitHub', href: 'https://github.com/MukundShankar-dev/loopformer', external: true }],
+        href: '/projects/loopformer/',
+        links: [
+            { label: 'GitHub', href: 'https://github.com/MukundShankar-dev/loopformer', external: true },
+            { label: 'Project journal', href: '/projects/loopformer/' },
+        ],
         description: 'Exploring recurrent computation in small language models by repeatedly applying shared transformer blocks and evaluating how learned reasoning depth generalizes.',
     },
     {

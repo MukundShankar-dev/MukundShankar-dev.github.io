@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const slugs = ['full-time-brief', 'tool-calling', 'confidence-probes'];
+const slugs = ['full-time-brief', 'tool-calling', 'confidence-probes', 'loopformer'];
 
 test.each(slugs)('%s is a self-contained static page with metadata and working local assets', slug => {
   const filename = path.join(process.cwd(), 'public/projects', slug, 'index.html');
@@ -13,7 +13,7 @@ test.each(slugs)('%s is a self-contained static page with metadata and working l
   for (const element of page.querySelectorAll('img[src], a[href], link[href]')) {
     const url = element.getAttribute('src') || element.getAttribute('href');
     if (/^https?:/.test(url)) continue;
-    const [pathname, hash] = url.split('#');
+    const [pathname, hash] = url.replace(/\?[^#]*/, '').split('#');
     if (!pathname) {
       expect(page.getElementById(hash)).not.toBeNull();
       continue;
@@ -21,6 +21,25 @@ test.each(slugs)('%s is a self-contained static page with metadata and working l
     const local = pathname.startsWith('/') ? path.join(process.cwd(), 'public', pathname) : path.resolve(path.dirname(filename), pathname);
     expect(fs.existsSync(local)).toBe(true);
   }
+});
+
+test('LoopFormer index links match separate entries and their accessible headings', () => {
+  const filename = path.join(process.cwd(), 'public/projects/loopformer/index.html');
+  const page = new DOMParser().parseFromString(fs.readFileSync(filename, 'utf8'), 'text/html');
+  const ids = [...page.querySelectorAll('[id]')].map(element => element.id);
+  expect(new Set(ids).size).toBe(ids.length);
+  const links = [...page.querySelectorAll('.journal-index > a')];
+  const entries = [...page.querySelectorAll('main > article.journal-entry')];
+  expect(entries.length).toBeGreaterThanOrEqual(2);
+  expect(links).toHaveLength(entries.length);
+  links.forEach((link, index) => {
+    const entry = page.getElementById(link.getAttribute('href').slice(1));
+    expect(entry).toBe(entries[index]);
+    expect(entry.querySelectorAll('h2')).toHaveLength(1);
+    const heading = entry.querySelector('header > h2');
+    expect(entry.getAttribute('aria-labelledby')).toBe(heading.id);
+    expect(link.querySelector('span:last-child').textContent.trim()).toBe(heading.textContent.trim());
+  });
 });
 
 test('research detail pages preserve the original reports and quantitative claims', () => {

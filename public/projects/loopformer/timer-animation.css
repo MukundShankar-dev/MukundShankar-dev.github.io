@@ -1,0 +1,11 @@
+/* Controller-only flow; the existing training-table styling stays shared. */
+.timer-story [data-timer-part].is-active > rect:first-child { stroke:#a16b51; stroke-width:2.4; }
+.timer-story [data-timer-memory], .timer-story [data-timer-previous] { fill:#a16b51; font-size:16px; font-weight:600; }
+.timer-story [data-timer-verdict] { fill:#a16b51; font-size:12px; font-weight:600; }
+.timer-story .ex-unified-svg { min-width:700px; }
+#architecture-5 .table-scroll { overflow-x:auto; max-width:100%; }
+#architecture-5 .table-scroll table { width:100%; border-collapse:collapse; font-size:13px; }
+#architecture-5 .table-scroll th, #architecture-5 .table-scroll td { padding:10px 12px; text-align:left; border-bottom:1px solid #e6e0d7; }
+#architecture-5 .table-scroll caption { text-align:left; padding:16px 0 10px; font-size:13px; color:#68665e; }
+#architecture-5 .timer-fit-note { font-size:12px; color:#68665e; line-height:1.6; }
+#architecture-5 .chart-data { margin:18px 0 30px; font-size:13px; }

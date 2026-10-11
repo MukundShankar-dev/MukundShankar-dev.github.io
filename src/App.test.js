@@ -6,7 +6,7 @@ test('separates experience, selected work, education, and earlier work', () => {
   render(<App />);
   expect(screen.getAllByRole('heading', { level: 2 }).map(h => h.textContent)).toEqual(['Experience', 'Selected Work', 'Education', 'Earlier Work']);
   expect(screen.getByRole('link', { name: 'Resume' })).toHaveAttribute('href', 'resume.pdf');
-  expect(screen.getByRole('link', { name: 'Project journal' })).toHaveAttribute('href', '/projects/dexvision/');
+  expect(within(screen.getByRole('article', { name: 'DexVision' })).getByRole('link', { name: 'Project journal' })).toHaveAttribute('href', '/projects/dexvision/');
   expect(screen.getByText('Expected Dec 2026')).toBeInTheDocument();
   expect(screen.getByText(/Currently, I'm researching long-form language generation/)).toBeInTheDocument();
   expect(screen.queryByRole('heading', { name: /Research Assistant/ })).not.toBeInTheDocument();
@@ -16,7 +16,7 @@ test('projects are concise, illustrated rows in editorial order without resume b
   render(<App />);
   const section = screen.getByRole('region', { name: 'Selected Work' });
   expect(within(section).getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual([
-    'Full Time Brief', 'DexVision', 'Diagnosing Tool-Call Decision Making in Small LLMs', 'Confidence Probes for Language Models',
+    'LoopFormer', 'Full Time Brief', 'DexVision', 'Diagnosing Tool-Call Decision Making in Small LLMs', 'Confidence Probes for Language Models',
   ]);
   expect(within(section).queryByRole('list')).not.toBeInTheDocument();
   for (const article of within(section).getAllByRole('article')) {
@@ -25,9 +25,12 @@ test('projects are concise, illustrated rows in editorial order without resume b
     expect(within(article).getByRole('img')).toHaveAttribute('height');
   }
   expect(screen.queryByText(/47.1%|0.953 ROC-AUC/)).not.toBeInTheDocument();
-  expect(screen.queryByRole('heading', { name: 'LoopFormer' })).not.toBeInTheDocument();
+  expect(within(section).getByRole('heading', { name: 'LoopFormer' })).toBeInTheDocument();
+  expect(within(screen.getByRole('article', { name: 'LoopFormer' })).getByRole('link', { name: 'Project journal' })).toHaveAttribute('href', '/projects/loopformer/');
   const loopformer = projects.find(project => project.slug === 'loopformer');
-  expect(loopformer.visible).toBe(false);
+  expect(loopformer.visible).toBe(true);
+  expect(loopformer.href).toBe('/projects/loopformer/');
+  expect(loopformer.links).toContainEqual({ label: 'Project journal', href: '/projects/loopformer/' });
   expect(loopformer.image).toBeTruthy();
   expect(loopformer.links[0].href).toBe('https://github.com/MukundShankar-dev/loopformer');
 });

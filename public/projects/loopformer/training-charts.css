@@ -1,0 +1,50 @@
+.training-figure {
+  margin: 30px 0;
+  padding: 22px 20px 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fffefa;
+}
+.training-figure h4 { margin: 0 0 4px; font-size: 1.05rem; letter-spacing: -.02em; }
+.training-figure .chart-subtitle { margin: 0; color: var(--muted); font-size: .82rem; }
+.chart-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; margin: 16px 0 10px; }
+.chart-controls label { display: inline-flex; align-items: center; gap: 7px; font-size: .76rem; color: var(--muted); }
+.chart-controls select, .chart-controls button {
+  font: inherit; font-size: .76rem; color: var(--ink); background: #fffefa;
+  border: 1px solid #d7d1c8; border-radius: 5px; padding: 5px 8px; min-height: 32px;
+}
+.chart-controls button { cursor: pointer; margin-left: auto; }
+.chart-controls button:hover { border-color: var(--accent); color: var(--accent); }
+.chart-controls :focus-visible, .training-chart:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.chart-series { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; padding: 0; border: 0; }
+.chart-series legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.chart-series label { display: inline-flex; align-items: center; gap: 6px; font-size: .75rem; cursor: pointer; }
+.chart-series input { accent-color: var(--series-color); }
+.chart-series .series-swatch { width: 17px; border-top: 2px solid var(--series-color); }
+.training-chart { width: 100%; height: 350px; }
+.training-figure figcaption { margin-top: 10px; color: var(--muted); font-size: .76rem; line-height: 1.65; }
+.training-figure .chart-hint { margin: 4px 0 0; color: var(--muted); font-size: .72rem; }
+.chart-status { color: var(--muted); font-size: .8rem; }
+.training-data-note, .journal-entry > .training-data-note { font-family: inherit; font-size: .8rem; color: var(--muted); line-height: 1.7; }
+.training-data-note summary { color: var(--ink); cursor: pointer; }
+.training-data-note table { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: .75rem; }
+@media (max-width: 540px) {
+  .training-figure { padding: 16px 10px 14px; margin-left: -10px; margin-right: -10px; }
+  .training-chart { height: 310px; }
+  .chart-controls { gap: 8px; }
+  .chart-controls button { margin-left: 0; }
+  .chart-series { gap: 5px 10px; }
+}
+
+.chart-smoothing { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 12px 0; color: var(--muted); font-size: .75rem; }
+.chart-smoothing input[type="range"] { width: 180px; max-width: 100%; margin: 0; accent-color: var(--plot-training-train); cursor: pointer; }
+.chart-smoothing input:disabled { cursor: default; opacity: .4; }
+.chart-smoothing input:focus-visible { outline: 2px solid var(--plot-training-train); outline-offset: 3px; }
+.chart-smoothing output { min-width: 72px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.chart-smoothing span { font-size: .7rem; }
+@media (max-width: 540px) {
+  .chart-smoothing { gap: 6px 8px; }
+  .chart-smoothing label { flex-basis: 100%; }
+  .chart-smoothing input[type="range"] { flex: 1; min-width: 90px; }
+  .chart-smoothing span { flex-basis: 100%; }
+}
